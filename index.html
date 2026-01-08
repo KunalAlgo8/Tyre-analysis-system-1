@@ -8,6 +8,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .hidden { display: none !important; }
+        
+        /* Historical Version Alert */
+        @keyframes pulse-border {
+            0%, 100% { border-color: #f59e0b; }
+            50% { border-color: #fbbf24; }
+        }
+        
+        .historical-alert {
+            animation: pulse-border 2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -422,6 +432,22 @@
             
             <!-- Data Comparison Tab -->
             <div id="content-data-comparison" class="hidden space-y-6">
+                <!-- Historical Version Alert (Hidden by default) -->
+                <div id="historicalAlert" class="hidden bg-yellow-50 border-4 historical-alert rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-600"></i>
+                            <div>
+                                <p class="font-bold text-yellow-800">You are viewing historical data</p>
+                                <p class="text-sm text-yellow-700">Version: <span id="historicalVersionText">v4</span> | This is not the current active version</p>
+                            </div>
+                        </div>
+                        <button onclick="loadLatestVersion()" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 font-medium">
+                            Switch to Latest
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Comparison Table -->
                 <div class="bg-white p-6 rounded border-2 border-gray-300">
                     <div class="flex justify-between items-center mb-4">
@@ -429,10 +455,10 @@
                             <h2 class="text-xl font-bold">Master Data vs Measured Data Comparison</h2>
                             <div id="overallGradeContainer" class="hidden flex items-center gap-2">
                                 <span class="text-sm font-medium text-gray-600">Overall Grade:</span>
-                                <span class="px-4 py-1 rounded font-bold text-white text-lg bg-green-600">A</span>
+                                <span id="overallGradeBadge" class="px-4 py-1 rounded font-bold text-white text-lg bg-green-600">A</span>
                             </div>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 items-center">
                             <select id="recipeSelect" onchange="handleRecipeChange()" class="p-2 border-2 border-gray-300 rounded text-sm min-w-[200px]">
                                 <option value="">Select Recipe</option>
                                 <option value="recipe-a">Recipe A - Standard Compound</option>
@@ -442,6 +468,31 @@
                                 <option value="recipe-e">Recipe E - Eco Friendly</option>
                                 <option value="recipe-f">Recipe F - Winter Special</option>
                             </select>
+                            
+                            <!-- Version Selector (Hidden initially, shown when recipe is selected) -->
+                            <div id="versionControls" class="hidden flex items-center gap-2">
+                                <div class="h-8 w-px bg-gray-300"></div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-gray-600">Data Version:</span>
+                                    <select id="versionSelect" onchange="handleVersionChange()" class="p-2 border-2 border-gray-300 rounded text-sm">
+                                        <option value="v5">v5 (Latest) - Jan 08, 2026</option>
+                                        <option value="v4">v4 - Jan 07, 2026</option>
+                                        <option value="v3">v3 - Jan 06, 2026</option>
+                                        <option value="v2">v2 - Jan 05, 2026</option>
+                                        <option value="v1">v1 - Jan 04, 2026</option>
+                                    </select>
+                                </div>
+                                <button onclick="openHistoryPanel()" class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 flex items-center gap-2">
+                                    <i data-lucide="history" class="w-4 h-4"></i>
+                                    View History
+                                </button>
+                            </div>
+                            
+                            <!-- Version Status Indicator -->
+                            <div id="versionIndicator" class="hidden items-center gap-2 px-3 py-2 rounded bg-green-100 border-2 border-green-500">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <span class="text-xs font-bold text-green-700">LATEST</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -455,10 +506,12 @@
                         <table class="w-full border-collapse">
                             <thead>
                                 <tr class="bg-gray-200">
-                                    <th class="border-2 border-gray-300 p-3 text-left w-1/4">Parameter Name</th>
-                                    <th class="border-2 border-gray-300 p-3 text-left w-1/4 bg-blue-50">Master Data (Target Specs)</th>
-                                    <th class="border-2 border-gray-300 p-3 text-left w-1/4 bg-green-50">Measured Data (Actual)</th>
-                                    <th class="border-2 border-gray-300 p-3 text-center w-1/4">Grade</th>
+                                    <th class="border-2 border-gray-300 p-3 text-left w-1/6">Parameter Name</th>
+                                    <th class="border-2 border-gray-300 p-3 text-left w-1/6 bg-blue-50">Master Data (Target Specs)</th>
+                                    <th class="border-2 border-gray-300 p-3 text-center w-1/6 bg-green-50">Measured Data (Actual)<br>Section 1</th>
+                                    <th class="border-2 border-gray-300 p-3 text-center w-1/6 bg-green-50">Measured Data (Actual)<br>Section 2</th>
+                                    <th class="border-2 border-gray-300 p-3 text-center w-1/6 bg-green-50">Measured Data (Actual)<br>Section 3</th>
+                                    <th class="border-2 border-gray-300 p-3 text-center w-1/6">Overall Grade</th>
                                 </tr>
                             </thead>
                             <tbody id="parameterTableBody">
@@ -523,61 +576,245 @@
         
         <!-- Footer -->
         <footer class="bg-gray-800 text-white text-center p-4 mt-8">
-            <p class="text-sm">© 2026 Tyre Analysis System | Version 1.0</p>
+            <p class="text-sm">© 2024 Tyre Analysis System | Version 1.0</p>
         </footer>
     </div>
 
+    <!-- History Panel Modal -->
+    <div id="historyPanel" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <!-- Panel Header -->
+            <div class="bg-blue-700 text-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="history" class="w-6 h-6"></i>
+                    <h3 class="text-xl font-bold">Version History - <span id="historyRecipeName"></span></h3>
+                </div>
+                <button onclick="closeHistoryPanel()" class="text-white hover:bg-blue-800 rounded p-1">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- Panel Content -->
+            <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 80px);">
+                <div class="space-y-3">
+                    <!-- Version 5 (Latest) -->
+                    <div class="border-2 border-green-500 bg-green-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-green-600 text-white px-3 py-1 rounded font-bold">v5</div>
+                                <div>
+                                    <p class="font-bold text-gray-800 flex items-center gap-2">
+                                        Jan 08, 2026 10:30 AM
+                                        <span class="px-2 py-1 bg-green-600 text-white text-xs rounded font-bold">LATEST</span>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Modified by: <strong>John Smith (RPSCoE)</strong></p>
+                                    <p class="text-xs text-gray-500 mt-1">Changes: Updated 3 parameter measurements</p>
+                                </div>
+                            </div>
+                            <button onclick="loadVersion('v5')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                View
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Version 4 -->
+                    <div class="border-2 border-gray-300 rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-600 text-white px-3 py-1 rounded font-bold">v4</div>
+                                <div>
+                                    <p class="font-bold text-gray-800">Jan 07, 2026 03:45 PM</p>
+                                    <p class="text-sm text-gray-600">Modified by: <strong>Sarah Johnson (BTP Quality)</strong></p>
+                                    <p class="text-xs text-gray-500 mt-1">Changes: Quality check adjustment on 5 parameters</p>
+                                </div>
+                            </div>
+                            <button onclick="loadVersion('v4')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                View
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Version 3 -->
+                    <div class="border-2 border-gray-300 rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-600 text-white px-3 py-1 rounded font-bold">v3</div>
+                                <div>
+                                    <p class="font-bold text-gray-800">Jan 06, 2026 11:20 AM</p>
+                                    <p class="text-sm text-gray-600">Modified by: <strong>Michael Chen (BTP Technical)</strong></p>
+                                    <p class="text-xs text-gray-500 mt-1">Changes: Calibration update after equipment maintenance</p>
+                                </div>
+                            </div>
+                            <button onclick="loadVersion('v3')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                View
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Version 2 -->
+                    <div class="border-2 border-gray-300 rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-600 text-white px-3 py-1 rounded font-bold">v2</div>
+                                <div>
+                                    <p class="font-bold text-gray-800">Jan 05, 2026 02:15 PM</p>
+                                    <p class="text-sm text-gray-600">Modified by: <strong>Emily Davis (RPSCoE)</strong></p>
+                                    <p class="text-xs text-gray-500 mt-1">Changes: Batch measurement corrections</p>
+                                </div>
+                            </div>
+                            <button onclick="loadVersion('v2')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                View
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Version 1 -->
+                    <div class="border-2 border-gray-300 rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-600 text-white px-3 py-1 rounded font-bold">v1</div>
+                                <div>
+                                    <p class="font-bold text-gray-800">Jan 04, 2026 09:00 AM</p>
+                                    <p class="text-sm text-gray-600">Modified by: <strong>System (Initial Upload)</strong></p>
+                                    <p class="text-xs text-gray-500 mt-1">Changes: Initial data entry</p>
+                                </div>
+                            </div>
+                            <button onclick="loadVersion('v1')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Panel Footer -->
+            <div class="bg-gray-100 p-4 flex justify-end">
+                <button onclick="closeHistoryPanel()" class="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Sample data
-        const allParameters = [
-            { name: 'Overall Tread Center Gauge', master: '12.5mm ±0.5', measured: '12.7mm', deviation: '+0.2mm', grade: 'A' },
-            { name: 'Overall Shoulder Gauge SS', master: '11.0mm ±0.4', measured: '11.3mm', deviation: '+0.3mm', grade: 'B' },
-            { name: 'Overall Shoulder Gauge OSS', master: '11.0mm ±0.4', measured: '11.5mm', deviation: '+0.5mm', grade: 'C' },
-            { name: 'Tread Center Rubber Gauge', master: '8.5mm ±0.3', measured: '8.6mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Tread shoulder Rubber gauge SS', master: '7.8mm ±0.3', measured: '7.9mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Tread shoulder Rubber gauge OSS', master: '7.8mm ±0.3', measured: '8.0mm', deviation: '+0.2mm', grade: 'B' },
-            { name: 'Under Tread 1 at Center', master: '1.8mm ±0.2', measured: '1.9mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Under Tread 2 at Shoulder SS', master: '1.5mm ±0.2', measured: '1.6mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Under Tread 2 at Shoulder OSS', master: '1.5mm ±0.2', measured: '1.7mm', deviation: '+0.2mm', grade: 'B' },
-            { name: 'Inner Liner gauge at shoulders SS', master: '1.2mm ±0.1', measured: '1.25mm', deviation: '+0.05mm', grade: 'A' },
-            { name: 'Inner Liner gauge at shoulders OSS', master: '1.2mm ±0.1', measured: '1.28mm', deviation: '+0.08mm', grade: 'B' },
-            { name: 'Belt 1 Width', master: '165mm ±2', measured: '166mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Belt 2 Width', master: '152mm ±2', measured: '153mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Belt 1 Centering SS', master: '0mm ±1', measured: '0.5mm', deviation: '+0.5mm', grade: 'A' },
-            { name: 'Belt 1 Centering OSS', master: '0mm ±1', measured: '-0.3mm', deviation: '-0.3mm', grade: 'A' },
-            { name: 'Belt 2 Centering SS', master: '0mm ±1', measured: '0.6mm', deviation: '+0.6mm', grade: 'B' },
-            { name: 'Belt 2 Centering OSS', master: '0mm ±1', measured: '-0.4mm', deviation: '-0.4mm', grade: 'A' },
-            { name: 'Half Width of capstrip SS', master: '8.5mm ±0.5', measured: '8.7mm', deviation: '+0.2mm', grade: 'A' },
-            { name: 'Half Width of capstrip OSS', master: '8.5mm ±0.5', measured: '8.8mm', deviation: '+0.3mm', grade: 'B' },
-            { name: 'Pad Gauge SS', master: '2.5mm ±0.2', measured: '2.6mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Pad Gauge OSS', master: '2.5mm ±0.2', measured: '2.7mm', deviation: '+0.2mm', grade: 'B' },
-            { name: 'Mid Sidewall Rubber Gauge SS', master: '3.2mm ±0.3', measured: '3.3mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Mid Sidewall Rubber Gauge OSS', master: '3.2mm ±0.3', measured: '3.5mm', deviation: '+0.3mm', grade: 'B' },
-            { name: 'Rim strip height SS', master: '6.5mm ±0.4', measured: '6.7mm', deviation: '+0.2mm', grade: 'A' },
-            { name: 'Rim strip height OSS', master: '6.5mm ±0.4', measured: '6.8mm', deviation: '+0.3mm', grade: 'B' },
-            { name: 'SW ending from heel SS', master: '12mm ±1', measured: '12.5mm', deviation: '+0.5mm', grade: 'A' },
-            { name: 'SW ending from heel OSS', master: '12mm ±1', measured: '12.8mm', deviation: '+0.8mm', grade: 'B' },
-            { name: 'Filler Height SS', master: '18mm ±1', measured: '18.5mm', deviation: '+0.5mm', grade: 'A' },
-            { name: 'Filler Height OSS', master: '18mm ±1', measured: '18.7mm', deviation: '+0.7mm', grade: 'B' },
-            { name: 'Ply 1 turn-up height SS', master: '42mm ±2', measured: '43mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Ply 1 turn-up height OSS', master: '42mm ±2', measured: '43.5mm', deviation: '+1.5mm', grade: 'B' },
-            { name: 'Ply 2 turn-up height SS', master: '38mm ±2', measured: '39mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Ply 2 turn-up height OSS', master: '38mm ±2', measured: '39.5mm', deviation: '+1.5mm', grade: 'B' },
-            { name: 'Overall Bead width SS', master: '14.5mm ±0.5', measured: '14.7mm', deviation: '+0.2mm', grade: 'A' },
-            { name: 'Overall Bead width OSS', master: '14.5mm ±0.5', measured: '14.9mm', deviation: '+0.4mm', grade: 'B' },
-            { name: 'Chimney Position on Rib', master: 'Center ±2mm', measured: 'Center +1mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Bead Construction', master: 'Type A', measured: 'Type A', deviation: '0', grade: 'A' },
-            { name: 'Toe-Toe Distance', master: '145mm ±2', measured: '146mm', deviation: '+1mm', grade: 'A' },
-            { name: 'Rubber Gauge at bead (Bead ring line) SS', master: '2.8mm ±0.2', measured: '2.9mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Rubber Gauge at bead (Bead ring line) OSS', master: '2.8mm ±0.2', measured: '3.0mm', deviation: '+0.2mm', grade: 'B' },
-            { name: 'Material Gauge under the bead SS', master: '3.5mm ±0.3', measured: '3.6mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'Material Gauge under the bead OSS', master: '3.5mm ±0.3', measured: '3.8mm', deviation: '+0.3mm', grade: 'B' },
-            { name: 'UT gauge above cap ply @ shoulder SS', master: '1.6mm ±0.2', measured: '1.7mm', deviation: '+0.1mm', grade: 'A' },
-            { name: 'UT gauge above cap ply @ shoulder OSS', master: '1.6mm ±0.2', measured: '1.8mm', deviation: '+0.2mm', grade: 'B' }
-        ];
+        // Sample data for different versions
+        const versionData = {
+            v5: { // Latest version
+                parameters: [
+                    { name: 'Overall Tread Center Gauge', master: '12.5mm ±0.5', section1: '12.6mm', section2: '12.7mm', section3: '12.6mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Overall Shoulder Gauge SS', master: '11.0mm ±0.4', section1: '11.2mm', section2: '11.3mm', section3: '11.4mm', grade1: 'B', grade2: 'B', grade3: 'C', overallGrade: 'B' },
+                    { name: 'Overall Shoulder Gauge OSS', master: '11.0mm ±0.4', section1: '11.4mm', section2: '11.5mm', section3: '11.6mm', grade1: 'B', grade2: 'C', grade3: 'C', overallGrade: 'C' },
+                    { name: 'Tread Center Rubber Gauge', master: '8.5mm ±0.3', section1: '8.5mm', section2: '8.6mm', section3: '8.5mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Tread shoulder Rubber gauge SS', master: '7.8mm ±0.3', section1: '7.8mm', section2: '7.9mm', section3: '7.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Tread shoulder Rubber gauge OSS', master: '7.8mm ±0.3', section1: '7.9mm', section2: '8.0mm', section3: '8.1mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Under Tread 1 at Center', master: '1.8mm ±0.2', section1: '1.85mm', section2: '1.9mm', section3: '1.9mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Under Tread 2 at Shoulder SS', master: '1.5mm ±0.2', section1: '1.55mm', section2: '1.6mm', section3: '1.6mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Under Tread 2 at Shoulder OSS', master: '1.5mm ±0.2', section1: '1.65mm', section2: '1.7mm', section3: '1.7mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Inner Liner gauge at shoulders SS', master: '1.2mm ±0.1', section1: '1.22mm', section2: '1.25mm', section3: '1.23mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Inner Liner gauge at shoulders OSS', master: '1.2mm ±0.1', section1: '1.25mm', section2: '1.28mm', section3: '1.27mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Belt 1 Width', master: '165mm ±2', section1: '165.5mm', section2: '166mm', section3: '165.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 2 Width', master: '152mm ±2', section1: '152.5mm', section2: '153mm', section3: '152.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 1 Centering SS', master: '0mm ±1', section1: '0.3mm', section2: '0.5mm', section3: '0.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 1 Centering OSS', master: '0mm ±1', section1: '-0.2mm', section2: '-0.3mm', section3: '-0.25mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 2 Centering SS', master: '0mm ±1', section1: '0.4mm', section2: '0.6mm', section3: '0.5mm', grade1: 'A', grade2: 'B', grade3: 'A', overallGrade: 'B' },
+                    { name: 'Belt 2 Centering OSS', master: '0mm ±1', section1: '-0.3mm', section2: '-0.4mm', section3: '-0.35mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Half Width of capstrip SS', master: '8.5mm ±0.5', section1: '8.6mm', section2: '8.7mm', section3: '8.65mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Half Width of capstrip OSS', master: '8.5mm ±0.5', section1: '8.7mm', section2: '8.8mm', section3: '8.9mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Pad Gauge SS', master: '2.5mm ±0.2', section1: '2.55mm', section2: '2.6mm', section3: '2.58mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Pad Gauge OSS', master: '2.5mm ±0.2', section1: '2.65mm', section2: '2.7mm', section3: '2.68mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Mid Sidewall Rubber Gauge SS', master: '3.2mm ±0.3', section1: '3.25mm', section2: '3.3mm', section3: '3.28mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Mid Sidewall Rubber Gauge OSS', master: '3.2mm ±0.3', section1: '3.4mm', section2: '3.5mm', section3: '3.45mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Rim strip height SS', master: '6.5mm ±0.4', section1: '6.6mm', section2: '6.7mm', section3: '6.65mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rim strip height OSS', master: '6.5mm ±0.4', section1: '6.7mm', section2: '6.8mm', section3: '6.75mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'SW ending from heel SS', master: '12mm ±1', section1: '12.3mm', section2: '12.5mm', section3: '12.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'SW ending from heel OSS', master: '12mm ±1', section1: '12.6mm', section2: '12.8mm', section3: '12.7mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Filler Height SS', master: '18mm ±1', section1: '18.3mm', section2: '18.5mm', section3: '18.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Filler Height OSS', master: '18mm ±1', section1: '18.5mm', section2: '18.7mm', section3: '18.6mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Ply 1 turn-up height SS', master: '42mm ±2', section1: '42.5mm', section2: '43mm', section3: '42.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 1 turn-up height OSS', master: '42mm ±2', section1: '43mm', section2: '43.5mm', section3: '43.2mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Ply 2 turn-up height SS', master: '38mm ±2', section1: '38.5mm', section2: '39mm', section3: '38.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 2 turn-up height OSS', master: '38mm ±2', section1: '39mm', section2: '39.5mm', section3: '39.2mm', grade1: 'A', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Overall Bead width SS', master: '14.5mm ±0.5', section1: '14.6mm', section2: '14.7mm', section3: '14.65mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Overall Bead width OSS', master: '14.5mm ±0.5', section1: '14.8mm', section2: '14.9mm', section3: '14.85mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Chimney Position on Rib', master: 'Center ±2mm', section1: 'Center', section2: 'Center +1mm', section3: 'Center +0.5mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Bead Construction', master: 'Type A', section1: 'Type A', section2: 'Type A', section3: 'Type A', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Toe-Toe Distance', master: '145mm ±2', section1: '145.5mm', section2: '146mm', section3: '145.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rubber Gauge at bead (Bead ring line) SS', master: '2.8mm ±0.2', section1: '2.85mm', section2: '2.9mm', section3: '2.88mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rubber Gauge at bead (Bead ring line) OSS', master: '2.8mm ±0.2', section1: '2.95mm', section2: '3.0mm', section3: '2.98mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Material Gauge under the bead SS', master: '3.5mm ±0.3', section1: '3.55mm', section2: '3.6mm', section3: '3.58mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Material Gauge under the bead OSS', master: '3.5mm ±0.3', section1: '3.7mm', section2: '3.8mm', section3: '3.75mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'UT gauge above cap ply @ shoulder SS', master: '1.6mm ±0.2', section1: '1.65mm', section2: '1.7mm', section3: '1.68mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'UT gauge above cap ply @ shoulder OSS', master: '1.6mm ±0.2', section1: '1.75mm', section2: '1.8mm', section3: '1.78mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' }
+                ]
+            },
+            v4: { // Older version with slightly different values
+                parameters: [
+                    { name: 'Overall Tread Center Gauge', master: '12.5mm ±0.5', section1: '12.5mm', section2: '12.6mm', section3: '12.55mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Overall Shoulder Gauge SS', master: '11.0mm ±0.4', section1: '11.1mm', section2: '11.2mm', section3: '11.15mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Overall Shoulder Gauge OSS', master: '11.0mm ±0.4', section1: '11.3mm', section2: '11.4mm', section3: '11.35mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Tread Center Rubber Gauge', master: '8.5mm ±0.3', section1: '8.5mm', section2: '8.5mm', section3: '8.5mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Tread shoulder Rubber gauge SS', master: '7.8mm ±0.3', section1: '7.8mm', section2: '7.8mm', section3: '7.8mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Tread shoulder Rubber gauge OSS', master: '7.8mm ±0.3', section1: '7.85mm', section2: '7.9mm', section3: '7.88mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Under Tread 1 at Center', master: '1.8mm ±0.2', section1: '1.82mm', section2: '1.85mm', section3: '1.83mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Under Tread 2 at Shoulder SS', master: '1.5mm ±0.2', section1: '1.52mm', section2: '1.55mm', section3: '1.53mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Under Tread 2 at Shoulder OSS', master: '1.5mm ±0.2', section1: '1.6mm', section2: '1.65mm', section3: '1.62mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Inner Liner gauge at shoulders SS', master: '1.2mm ±0.1', section1: '1.2mm', section2: '1.22mm', section3: '1.21mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Inner Liner gauge at shoulders OSS', master: '1.2mm ±0.1', section1: '1.23mm', section2: '1.25mm', section3: '1.24mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 1 Width', master: '165mm ±2', section1: '165mm', section2: '165.5mm', section3: '165.3mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 2 Width', master: '152mm ±2', section1: '152mm', section2: '152.5mm', section3: '152.3mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 1 Centering SS', master: '0mm ±1', section1: '0.2mm', section2: '0.3mm', section3: '0.25mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 1 Centering OSS', master: '0mm ±1', section1: '-0.15mm', section2: '-0.2mm', section3: '-0.18mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 2 Centering SS', master: '0mm ±1', section1: '0.3mm', section2: '0.4mm', section3: '0.35mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Belt 2 Centering OSS', master: '0mm ±1', section1: '-0.25mm', section2: '-0.3mm', section3: '-0.28mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Half Width of capstrip SS', master: '8.5mm ±0.5', section1: '8.55mm', section2: '8.6mm', section3: '8.58mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Half Width of capstrip OSS', master: '8.5mm ±0.5', section1: '8.65mm', section2: '8.7mm', section3: '8.68mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Pad Gauge SS', master: '2.5mm ±0.2', section1: '2.52mm', section2: '2.55mm', section3: '2.53mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Pad Gauge OSS', master: '2.5mm ±0.2', section1: '2.6mm', section2: '2.65mm', section3: '2.62mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Mid Sidewall Rubber Gauge SS', master: '3.2mm ±0.3', section1: '3.22mm', section2: '3.25mm', section3: '3.23mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Mid Sidewall Rubber Gauge OSS', master: '3.2mm ±0.3', section1: '3.35mm', section2: '3.4mm', section3: '3.38mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Rim strip height SS', master: '6.5mm ±0.4', section1: '6.55mm', section2: '6.6mm', section3: '6.58mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rim strip height OSS', master: '6.5mm ±0.4', section1: '6.65mm', section2: '6.7mm', section3: '6.68mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'SW ending from heel SS', master: '12mm ±1', section1: '12.2mm', section2: '12.3mm', section3: '12.25mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'SW ending from heel OSS', master: '12mm ±1', section1: '12.5mm', section2: '12.6mm', section3: '12.55mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Filler Height SS', master: '18mm ±1', section1: '18.2mm', section2: '18.3mm', section3: '18.25mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Filler Height OSS', master: '18mm ±1', section1: '18.4mm', section2: '18.5mm', section3: '18.45mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 1 turn-up height SS', master: '42mm ±2', section1: '42.3mm', section2: '42.5mm', section3: '42.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 1 turn-up height OSS', master: '42mm ±2', section1: '42.8mm', section2: '43mm', section3: '42.9mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 2 turn-up height SS', master: '38mm ±2', section1: '38.3mm', section2: '38.5mm', section3: '38.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Ply 2 turn-up height OSS', master: '38mm ±2', section1: '38.8mm', section2: '39mm', section3: '38.9mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Overall Bead width SS', master: '14.5mm ±0.5', section1: '14.55mm', section2: '14.6mm', section3: '14.58mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Overall Bead width OSS', master: '14.5mm ±0.5', section1: '14.75mm', section2: '14.8mm', section3: '14.78mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Chimney Position on Rib', master: 'Center ±2mm', section1: 'Center', section2: 'Center', section3: 'Center', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Bead Construction', master: 'Type A', section1: 'Type A', section2: 'Type A', section3: 'Type A', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Toe-Toe Distance', master: '145mm ±2', section1: '145.3mm', section2: '145.5mm', section3: '145.4mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rubber Gauge at bead (Bead ring line) SS', master: '2.8mm ±0.2', section1: '2.82mm', section2: '2.85mm', section3: '2.83mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Rubber Gauge at bead (Bead ring line) OSS', master: '2.8mm ±0.2', section1: '2.92mm', section2: '2.95mm', section3: '2.93mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'Material Gauge under the bead SS', master: '3.5mm ±0.3', section1: '3.52mm', section2: '3.55mm', section3: '3.53mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'Material Gauge under the bead OSS', master: '3.5mm ±0.3', section1: '3.68mm', section2: '3.7mm', section3: '3.69mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' },
+                    { name: 'UT gauge above cap ply @ shoulder SS', master: '1.6mm ±0.2', section1: '1.62mm', section2: '1.65mm', section3: '1.63mm', grade1: 'A', grade2: 'A', grade3: 'A', overallGrade: 'A' },
+                    { name: 'UT gauge above cap ply @ shoulder OSS', master: '1.6mm ±0.2', section1: '1.72mm', section2: '1.75mm', section3: '1.73mm', grade1: 'B', grade2: 'B', grade3: 'B', overallGrade: 'B' }
+                ]
+            }
+        };
+
+        // Recipe names mapping
+        const recipeNames = {
+            'recipe-a': 'Recipe A - Standard Compound',
+            'recipe-b': 'Recipe B - High Performance',
+            'recipe-c': 'Recipe C - All Weather',
+            'recipe-d': 'Recipe D - Heavy Duty',
+            'recipe-e': 'Recipe E - Eco Friendly',
+            'recipe-f': 'Recipe F - Winter Special'
+        };
 
         // State management
         let selectedRecipe = '';
+        let currentVersion = 'v5'; // Latest version by default
 
         // Initialize Lucide icons
         lucide.createIcons();
@@ -598,30 +835,119 @@
 
         // Tab switching
         function switchTab(tabId) {
-            // Hide all content
             document.querySelectorAll('[id^="content-"]').forEach(el => {
                 el.classList.add('hidden');
             });
             
-            // Remove active class from all tabs
             document.querySelectorAll('[id^="tab-"]').forEach(el => {
                 el.className = 'px-4 py-2 rounded flex items-center gap-2 bg-gray-200 text-gray-700 hover:bg-gray-300';
             });
             
-            // Show selected content
             document.getElementById('content-' + tabId).classList.remove('hidden');
-            
-            // Add active class to selected tab
             document.getElementById('tab-' + tabId).className = 'px-4 py-2 rounded flex items-center gap-2 bg-blue-600 text-white';
             
-            // Refresh icons
             lucide.createIcons();
         }
 
         // Recipe change handler
         function handleRecipeChange() {
             selectedRecipe = document.getElementById('recipeSelect').value;
+            
+            if (selectedRecipe) {
+                // Reset to latest version when recipe changes
+                currentVersion = 'v5';
+                document.getElementById('versionSelect').value = 'v5';
+                
+                // Show version controls
+                document.getElementById('versionControls').classList.remove('hidden');
+                document.getElementById('versionControls').classList.add('flex');
+            } else {
+                // Hide version controls if no recipe selected
+                document.getElementById('versionControls').classList.add('hidden');
+                document.getElementById('versionControls').classList.remove('flex');
+            }
+            
+            updateVersionIndicator();
             updateDataComparisonView();
+        }
+
+        // Version change handler
+        function handleVersionChange() {
+            currentVersion = document.getElementById('versionSelect').value;
+            updateVersionIndicator();
+            updateDataComparisonView();
+        }
+
+        // Load latest version
+        function loadLatestVersion() {
+            currentVersion = 'v5';
+            document.getElementById('versionSelect').value = 'v5';
+            updateVersionIndicator();
+            updateDataComparisonView();
+        }
+
+        // Load specific version
+        function loadVersion(version) {
+            currentVersion = version;
+            document.getElementById('versionSelect').value = version;
+            updateVersionIndicator();
+            updateDataComparisonView();
+            closeHistoryPanel();
+        }
+
+        // Update version indicator
+        function updateVersionIndicator() {
+            const indicator = document.getElementById('versionIndicator');
+            const historicalAlert = document.getElementById('historicalAlert');
+            const historicalVersionText = document.getElementById('historicalVersionText');
+            
+            if (!selectedRecipe) {
+                indicator.classList.add('hidden');
+                indicator.classList.remove('flex');
+                historicalAlert.classList.add('hidden');
+                return;
+            }
+            
+            indicator.classList.remove('hidden');
+            indicator.classList.add('flex');
+            
+            if (currentVersion === 'v5') {
+                // Latest version
+                indicator.className = 'flex items-center gap-2 px-3 py-2 rounded bg-green-100 border-2 border-green-500';
+                indicator.innerHTML = `
+                    <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                    <span class="text-xs font-bold text-green-700">LATEST</span>
+                `;
+                historicalAlert.classList.add('hidden');
+            } else {
+                // Historical version
+                indicator.className = 'flex items-center gap-2 px-3 py-2 rounded bg-yellow-100 border-2 border-yellow-500';
+                indicator.innerHTML = `
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-600"></i>
+                    <span class="text-xs font-bold text-yellow-700">HISTORICAL (${currentVersion.toUpperCase()})</span>
+                `;
+                historicalVersionText.textContent = currentVersion;
+                historicalAlert.classList.remove('hidden');
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Open history panel
+        function openHistoryPanel() {
+            if (!selectedRecipe) {
+                alert('Please select a recipe first');
+                return;
+            }
+            
+            document.getElementById('historyRecipeName').textContent = recipeNames[selectedRecipe];
+            document.getElementById('historyPanel').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // Close history panel
+        function closeHistoryPanel() {
+            document.getElementById('historyPanel').classList.add('hidden');
         }
 
         // Update data comparison view
@@ -630,47 +956,94 @@
             const warning = document.getElementById('recipeWarning');
             const overallGradeContainer = document.getElementById('overallGradeContainer');
             
+            // Get current version data (use v5 data for v3, v2, v1 as we only have v5 and v4 defined)
+            const dataSource = versionData[currentVersion] || versionData['v5'];
+            const allParameters = dataSource.parameters;
+            
             if (selectedRecipe) {
                 warning.classList.add('hidden');
                 overallGradeContainer.classList.remove('hidden');
                 
                 // Populate table
                 tableBody.innerHTML = allParameters.map(param => {
-                    const gradeColor = param.grade === 'A' ? 'bg-green-600' :
-                                      param.grade === 'B' ? 'bg-blue-600' :
-                                      param.grade === 'C' ? 'bg-yellow-600' : 'bg-red-600';
+                    const overallGradeColor = param.overallGrade === 'A' ? 'bg-green-600' :
+                                             param.overallGrade === 'B' ? 'bg-blue-600' :
+                                             param.overallGrade === 'C' ? 'bg-yellow-600' : 'bg-red-600';
                     
                     return `
                         <tr class="hover:bg-gray-50">
                             <td class="border-2 border-gray-300 p-3 font-medium">${param.name}</td>
                             <td class="border-2 border-gray-300 p-3 bg-blue-50">${param.master}</td>
-                            <td class="border-2 border-gray-300 p-3 bg-green-50">${param.measured}</td>
+                            <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">
+                                <span class="font-medium">${param.section1}</span>
+                            </td>
+                            <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">
+                                <span class="font-medium">${param.section2}</span>
+                            </td>
+                            <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">
+                                <span class="font-medium">${param.section3}</span>
+                            </td>
                             <td class="border-2 border-gray-300 p-3 text-center">
-                                <span class="px-3 py-1 rounded font-bold text-white ${gradeColor}">${param.grade}</span>
+                                <span class="px-3 py-1 rounded font-bold text-white text-lg ${overallGradeColor}">${param.overallGrade}</span>
                             </td>
                         </tr>
                     `;
                 }).join('');
                 
+                // Calculate summary statistics using overall grades
+                const gradeA = allParameters.filter(p => p.overallGrade === 'A').length;
+                const gradeB = allParameters.filter(p => p.overallGrade === 'B').length;
+                const gradeC = allParameters.filter(p => p.overallGrade === 'C').length;
+                const gradeD = allParameters.filter(p => p.overallGrade === 'D').length;
+                const total = allParameters.length;
+                const passed = gradeA + gradeB;
+                const compliance = ((passed / total) * 100).toFixed(1);
+                
                 // Update summary
-                document.getElementById('passedCount').textContent = '43/44';
-                document.getElementById('passedPercent').textContent = '97.7% Compliance';
-                document.getElementById('alertCount').textContent = '1/44';
-                document.getElementById('alertStatus').textContent = 'Requires Monitoring';
-                document.getElementById('failedCount').textContent = '0/44';
-                document.getElementById('failedStatus').textContent = 'No Failures';
-                document.getElementById('overallGrade').textContent = 'A';
-                document.getElementById('overallStatus').textContent = 'Excellent Performance';
+                document.getElementById('passedCount').textContent = `${passed}/${total}`;
+                document.getElementById('passedPercent').textContent = `${compliance}% Compliance`;
+                document.getElementById('alertCount').textContent = `${gradeC}/${total}`;
+                document.getElementById('alertStatus').textContent = gradeC > 0 ? 'Requires Monitoring' : 'No Alerts';
+                document.getElementById('failedCount').textContent = `${gradeD}/${total}`;
+                document.getElementById('failedStatus').textContent = gradeD > 0 ? `${gradeD} Failures` : 'No Failures';
+                
+                // Determine overall grade
+                let overallGrade = 'A';
+                if (gradeD > 0) overallGrade = 'D';
+                else if (gradeC > 0) overallGrade = 'C';
+                else if (gradeB > total * 0.3) overallGrade = 'B';
+                
+                const overallGradeColor = overallGrade === 'A' ? 'text-green-700' :
+                                         overallGrade === 'B' ? 'text-blue-700' :
+                                         overallGrade === 'C' ? 'text-yellow-700' : 'text-red-700';
+                
+                const overallGradeBgColor = overallGrade === 'A' ? 'bg-green-600' :
+                                           overallGrade === 'B' ? 'bg-blue-600' :
+                                           overallGrade === 'C' ? 'bg-yellow-600' : 'bg-red-600';
+                                         
+                const overallStatus = overallGrade === 'A' ? 'Excellent Performance' :
+                                    overallGrade === 'B' ? 'Good Performance' :
+                                    overallGrade === 'C' ? 'Needs Attention' : 'Critical Issues';
+                
+                document.getElementById('overallGrade').textContent = overallGrade;
+                document.getElementById('overallGrade').className = `text-3xl font-bold ${overallGradeColor}`;
+                document.getElementById('overallStatus').textContent = overallStatus;
+                
+                // Update overall grade badge in header
+                document.getElementById('overallGradeBadge').textContent = overallGrade;
+                document.getElementById('overallGradeBadge').className = `px-4 py-1 rounded font-bold text-white text-lg ${overallGradeBgColor}`;
             } else {
                 warning.classList.remove('hidden');
                 overallGradeContainer.classList.add('hidden');
                 
-                // Clear table
+                // Clear table - show empty rows with three sections
                 tableBody.innerHTML = allParameters.map(param => `
                     <tr class="hover:bg-gray-50">
                         <td class="border-2 border-gray-300 p-3 font-medium">${param.name}</td>
                         <td class="border-2 border-gray-300 p-3 bg-blue-50">-</td>
-                        <td class="border-2 border-gray-300 p-3 bg-green-50">-</td>
+                        <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">-</td>
+                        <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">-</td>
+                        <td class="border-2 border-gray-300 p-3 bg-green-50 text-center">-</td>
                         <td class="border-2 border-gray-300 p-3 text-center">
                             <span class="text-gray-400">-</span>
                         </td>
@@ -690,7 +1063,15 @@
         }
 
         // Initialize the page
+        updateVersionIndicator();
         updateDataComparisonView();
+        
+        // Close modal when clicking outside
+        document.getElementById('historyPanel').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHistoryPanel();
+            }
+        });
     </script>
 </body>
 </html>
