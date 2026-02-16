@@ -58,18 +58,20 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 
-        /* --- Analytics Dashboard CSS --- */
+        /* --- Analytics Dashboard CSS (kept for Data Comparison usage if needed) --- */
         .chart-card { background-color: white; border: 1px solid #d1d5db; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; border-radius: 0.5rem; overflow: hidden; }
         .chart-header { background-color: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; font-weight: 700; color: #1f2937; text-transform: uppercase; letter-spacing: 0.05em; height: 40px; display: flex; align-items: center; justify-content: center; }
         .chart-body { padding: 0.5rem; flex: 1; position: relative; }
-        .filter-btn { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition-property: background-color, color; transition-duration: 200ms; border: 1px solid transparent; cursor: pointer; }
-        .filter-btn-active { background-color: #2563eb; color: white; border-color: #2563eb; }
-        .filter-btn-inactive { background-color: #f3f4f6; color: #374151; border-color: #d1d5db; }
-        .filter-btn-inactive:hover { background-color: #e5e7eb; }
         
         /* BTP Dashboard Styles */
         .btp-stat-box { transition: all 0.2s; }
         .btp-stat-box:hover { transform: translateY(-2px); }
+
+        /* Parameter Analysis Tab Styles */
+        .dashboard-section { background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; display: flex; flex-direction: column; overflow: hidden; }
+        .section-header { padding: 0.5rem 1rem; border-bottom: 1px solid #f1f5f9; background-color: #f8fafc; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #475569; letter-spacing: 0.05em; }
+        .chart-wrapper { flex: 1; position: relative; min-height: 0; padding: 0.5rem; }
     </style>
 </head>
 <body class="font-sans bg-gray-100">
@@ -153,14 +155,6 @@
                 <button onclick="switchTab('comparison')" id="tab-comparison" class="px-6 py-2.5 rounded-lg flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-all whitespace-nowrap">
                     <span>📊</span>
                     Data Comparison
-                </button>
-                <button onclick="switchTab('analytics')" id="tab-analytics" class="px-6 py-2.5 rounded-lg flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-all whitespace-nowrap">
-                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-                    Analytics Dashboard
-                </button>
-                <button onclick="switchTab('reports')" id="tab-reports" class="px-6 py-2.5 rounded-lg flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-all whitespace-nowrap">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
-                    Reports
                 </button>
             </div>
         </div>
@@ -469,129 +463,6 @@
                 <div id="data-comparison-root"></div>
             </div>
 
-            <!-- ANALYTICS DASHBOARD TAB -->
-            <div id="content-analytics" class="hidden space-y-6">
-                <!-- Title Banner -->
-                <div class="bg-yellow-200 border-2 border-black p-4 mb-6 text-center shadow-sm">
-                    <h2 class="text-3xl font-extrabold text-black uppercase tracking-wider" id="analytics-page-title">Overall Performance Report</h2>
-                </div>
-
-                <!-- Master Control (Graph 1) -->
-                <div class="bg-white rounded-xl border-2 border-blue-200 shadow-lg p-4 mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="sliders-horizontal" class="w-5 h-5 text-blue-600"></i>
-                            Master Control: A+B Compliance
-                        </h3>
-                        <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded">Click Year or Month to Filter All Graphs</span>
-                    </div>
-                    <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-3 h-64 relative"><canvas id="chart1_years"></canvas></div>
-                        <div class="col-span-7 h-64 relative"><canvas id="chart1_months"></canvas></div>
-                        <div class="col-span-2 h-64 relative"><canvas id="chart1_ytd"></canvas></div>
-                    </div>
-                </div>
-
-                <!-- Performance Trends (Graphs 2-5) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="chart-card h-64"><div id="header-chart2" class="chart-header">Monthly CTA Compliance Report FY2026</div><div class="chart-body p-2"><canvas id="chart2"></canvas></div></div>
-                    <div class="chart-card h-64"><div id="header-chart3" class="chart-header">Monthly CTA Compliance Report FY2026 Grade Wise Count</div><div class="chart-body p-2"><canvas id="chart3"></canvas></div></div>
-                    <div class="chart-card h-64"><div id="header-chart4" class="chart-header">Monthly CTA Compliance Report FY2026 Grade Wise Percentage</div><div class="chart-body p-2"><canvas id="chart4"></canvas></div></div>
-                    <div class="chart-card h-64"><div id="header-chart5" class="chart-header">Monthly CTA Compliance Report FY2026 Grade Wise Percentage</div><div class="chart-body p-2"><canvas id="chart5"></canvas></div></div>
-                </div>
-
-                <!-- Component Off (Graph 6) -->
-                <div class="chart-card mb-6">
-                    <div id="header-chart6" class="chart-header">Overall OFF Count (Component-wise) [All, FY2026]</div>
-                    <div class="chart-body h-64"><canvas id="chart6"></canvas></div>
-                </div>
-
-                <!-- Parameter Off Breakdowns (Graphs 7-14) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="chart-card h-60"><div id="header-chart7" class="chart-header text-xs">Overall Tread OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart7"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart8" class="chart-header text-xs">Overall Sidewall OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart8"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart9" class="chart-header text-xs">Overall Belt OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart9"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart10" class="chart-header text-xs">Overall Capstrip OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart10"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart11" class="chart-header text-xs">Overall Ply OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart11"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart12" class="chart-header text-xs">Overall Bead OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart12"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart13" class="chart-header text-xs">Overall Inner Liner OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart13"></canvas></div></div>
-                    <div class="chart-card h-60"><div id="header-chart14" class="chart-header text-xs">Overall Toe-Toe OFF Count [All, FY2026]</div><div class="chart-body p-1"><canvas id="chart14"></canvas></div></div>
-                </div>
-
-                <!-- Recipe Analysis (Graphs 15-16 + List) -->
-                <div class="grid grid-cols-12 gap-6">
-                    <div class="col-span-4 chart-card h-96">
-                        <div id="header-chart15" class="chart-header">Gradewise Count for [All FY2026]</div>
-                        <div class="chart-body"><canvas id="chart15"></canvas></div>
-                    </div>
-                    <div class="col-span-4 chart-card h-96">
-                        <div id="header-chart16" class="chart-header">Gradewise Percentage for [All FY2026]</div>
-                        <div class="chart-body"><canvas id="chart16"></canvas></div>
-                    </div>
-                    <div class="col-span-4 chart-card h-96 flex flex-col">
-                        <div class="chart-header flex justify-between items-center">
-                            Recipe List <span id="recipeListHeader" class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Grade D</span>
-                        </div>
-                        <div class="flex-1 overflow-auto p-0">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-gray-100 font-bold sticky top-0"><tr><th class="p-3 border-b">Recipe Name</th><th class="p-3 border-b text-center">Grade</th><th class="p-3 border-b text-center">Rating</th></tr></thead>
-                                <tbody id="analyticsRecipeListBody" class="divide-y divide-gray-100">
-                                    <!-- Dynamic content -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- REPORTS TAB -->
-            <div id="content-reports" class="hidden">
-                <div class="max-w-xl mx-auto mt-10 bg-white p-8 rounded-xl border-2 border-gray-200 shadow-lg">
-                    <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="file-bar-chart" class="w-8 h-8 text-blue-600"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Monthly Reports</h2>
-                        <p class="text-gray-500 mt-2">Select a period to download the consolidated quality report.</p>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Month</label>
-                                <select id="reportMonth" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium">
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Year</label>
-                                <select id="reportYear" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium">
-                                    <option value="2023">2023</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2026">2026</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button onclick="downloadReport()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-bold text-lg hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transform transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                            <i data-lucide="download" class="w-5 h-5"></i>
-                            Download Monthly Report
-                        </button>
-                    </div>
-                </div>
-            </div>
         </main>
 
         <!-- Footer -->
@@ -795,6 +666,53 @@
             'Inner Liner gauge at shoulders OSS', 'Belt 1 Width', 'Belt 2 Width', 'Belt 1 Centering SS', 'Belt 1 Centering OSS'
         ];
 
+        // --- Parameter Analysis Mock Data Generation ---
+        const PA_COMPONENTS = ['Tread', 'Sidewall', 'Belt', 'Capstrip', 'Ply', 'Bead', 'InnerLiner', 'Toe-Toe'];
+        const PA_RECIPES = ['145/80R13 ULT XPC1', '155/70R13 TAXIMAX', '165/80R14 TAXIMAX', '185/65R15 UX ROYALE', '195/55R16 UX ROYALE', '205/65R16 UX ROYALE'];
+        const PA_COMPONENT_PARAMS = {
+            'Tread': ['Tread Center Gauge', 'Tread Shoulder Gauge', 'UT1 Center', 'UT2 Shoulder'],
+            'Sidewall': ['Sidewall Gauge Top', 'Sidewall Gauge Mid', 'Sidewall Gauge Bot'],
+            'Belt': ['Belt 1 Width', 'Belt 2 Width', 'Belt Angle'],
+            'Capstrip': ['Capstrip Width', 'Capstrip Center Gauge'],
+            'Ply': ['Ply Width', 'Ply Turnup'],
+            'Bead': ['Bead Width', 'Bead Heel Gauge'],
+            'InnerLiner': ['IL Gauge Center', 'IL Gauge Shoulder'],
+            'Toe-Toe': ['Toe Gauge']
+        };
+        const generatePAData = () => {
+            const data = [];
+            const startDate = new Date('2025-01-01');
+            const endDate = new Date('2026-12-31'); // Extended range for safety
+            
+            for (let dt = new Date(startDate); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+                const dateStr = dt.toISOString().split('T')[0];
+                const monthStr = dt.toISOString().slice(0, 7);
+                PA_RECIPES.forEach(recipe => {
+                    if (Math.random() > 0.8) return; 
+                    PA_COMPONENTS.forEach(comp => {
+                        const params = PA_COMPONENT_PARAMS[comp] || [];
+                        params.forEach(param => {
+                            for(let s=1; s<=3; s++) {
+                                const target = 10 + (params.indexOf(param) * 2); 
+                                const tolA = 0.5; const tolB = 0.8; const tolC = 1.2;
+                                const actual = target + ((Math.random() - 0.5) * (Math.random() > 0.85 ? 2.5 : 0.8));
+                                const diff = Math.abs(actual - target);
+                                let grade = 'D';
+                                if (diff <= tolA) grade = 'A'; else if (diff <= tolB) grade = 'B'; else if (diff <= tolC) grade = 'C';
+                                data.push({
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    date: dateStr, month: monthStr, recipe, component: comp, parameter: param, section: `S${s}`,
+                                    actual, target, tolA, tolB, tolC, grade
+                                });
+                            }
+                        });
+                    });
+                });
+            }
+            return data;
+        };
+        const PA_FULL_DATABASE = generatePAData();
+
         const BTP_RECIPE_STATUS = {
             'recipe-a': 'completed', 'recipe-b': 'pending', 'recipe-c': 'completed', 'recipe-d': 'pending', 'recipe-e': 'pending', 'recipe-f': 'completed'
         };
@@ -812,16 +730,7 @@
             cyan: '#22d3ee', pink: '#f472b6'
         };
         const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        let analyticsInitialized = false;
         
-        // --- Analytics State Management ---
-        let analyticsState = {
-            year: 'FY2026',
-            month: null, // null means full year
-            grade: 'D'
-        };
-        const analyticsCharts = {};
-
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
             populateDropdowns();
@@ -888,52 +797,10 @@
             document.getElementById('content-' + tabId).classList.remove('hidden');
             
             if (tabId === 'comparison') mountDataComparison();
-            if (tabId === 'analytics') {
-                if(!analyticsInitialized) {
-                    initAnalyticsDashboard();
-                    analyticsInitialized = true;
-                }
-            }
             if (tabId === 'btp') {
                 renderBTPDashboard();
             }
             lucide.createIcons();
-        }
-
-        // --- NEW REPORT FUNCTION ---
-        function downloadReport() {
-            const m = document.getElementById('reportMonth').value;
-            const y = document.getElementById('reportYear').value;
-            
-            // UI Feedback
-            const btn = document.querySelector('button[onclick="downloadReport()"]');
-            const originalContent = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Generating...`;
-            lucide.createIcons();
-
-            setTimeout(() => {
-                // Fake download logic
-                const content = `Tyre Analysis Monthly Report\nPeriod: ${m} ${y}\n\nGenerated on: ${new Date().toLocaleString()}\n\n[This is a placeholder for the actual PDF/Excel content]`;
-                const blob = new Blob([content], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Report_${m}_${y}.txt`; 
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-
-                btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Downloaded!`;
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                    lucide.createIcons();
-                }, 2000);
-            }, 1500);
         }
 
         // --- BTP Functions ---
@@ -1290,283 +1157,10 @@
             lucide.createIcons(); 
         }
 
-        // --- NEW ANALYTICS DASHBOARD LOGIC ---
-        function initAnalyticsDashboard() {
-            Chart.defaults.font.family = "'Inter', sans-serif";
-            Chart.defaults.font.size = 10;
-            Chart.defaults.maintainAspectRatio = false;
-            Chart.defaults.plugins.legend.position = 'top';
-            Chart.defaults.plugins.tooltip.mode = 'index';
-            Chart.defaults.plugins.tooltip.intersect = false;
-
-            // --- Graph 1: Master Control ---
-            // 1A: Years
-            const ctx1a = document.getElementById('chart1_years').getContext('2d');
-            analyticsCharts.c1a = new Chart(ctx1a, {
-                type: 'bar',
-                data: {
-                    labels: ['FY22', 'FY23', 'FY24', 'FY25', 'FY26'],
-                    datasets: [
-                        { label: 'Target', data: [90, 92, 94, 95, 96], backgroundColor: COLORS.primary },
-                        { label: 'Actual', data: [88, 90, 93, 94, 95], backgroundColor: COLORS.success }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, title: { display: true, text: 'Yearly A+B' } },
-                    onClick: (e, el) => {
-                        if(el.length) {
-                            const idx = el[0].index;
-                            const years = ['FY22', 'FY23', 'FY24', 'FY25', 'FY26'];
-                            setAnalyticsFilter(years[idx], null);
-                        }
-                    },
-                    onHover: (e, el) => { e.native.target.style.cursor = el.length ? 'pointer' : 'default'; }
-                }
-            });
-
-            // 1B: Months (Trend)
-            const ctx1b = document.getElementById('chart1_months').getContext('2d');
-            analyticsCharts.c1b = new Chart(ctx1b, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [
-                        { label: 'Target', data: Array(12).fill(96), borderColor: COLORS.primary, borderDash: [5,5], pointRadius: 2 },
-                        { label: 'Actual', data: [94, 95, 93, 96, 95, 97, 94, 95, 96, 95, 94, 95], borderColor: COLORS.success, tension: 0.3 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: true, position: 'top' }, title: { display: true, text: 'Monthly Trend (Click point to filter)' } },
-                    onClick: (e, el) => {
-                        if(el.length) {
-                            const idx = el[0].index;
-                            setAnalyticsFilter(analyticsState.year, MONTHS[idx]);
-                        }
-                    },
-                    onHover: (e, el) => { e.native.target.style.cursor = el.length ? 'pointer' : 'default'; }
-                }
-            });
-
-            // 1C: YTD
-            const ctx1c = document.getElementById('chart1_ytd').getContext('2d');
-            analyticsCharts.c1c = new Chart(ctx1c, {
-                type: 'bar',
-                data: {
-                    labels: ['Target', 'Actual'],
-                    datasets: [{
-                        data: [96, 95.2],
-                        backgroundColor: [COLORS.primary, COLORS.success]
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, title: { display: true, text: 'YTD' } }
-                }
-            });
-
-            // --- Other Graphs Initialization ---
-            const commonOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-            
-            // Chart 2: Mixed (Bar + Line) - Vertical
-            analyticsCharts.c2 = new Chart(document.getElementById('chart2'), { type: 'bar', data: {}, options: { ...commonOpts, plugins: { legend: { display: true } } } });
-
-            // Chart 3: Grouped Bar - Vertical
-            analyticsCharts.c3 = new Chart(document.getElementById('chart3'), { type: 'bar', data: {}, options: { ...commonOpts, plugins: { legend: { display: true } } } });
-
-            // Chart 4: Grouped Bar - Vertical
-            analyticsCharts.c4 = new Chart(document.getElementById('chart4'), { type: 'bar', data: {}, options: { ...commonOpts, plugins: { legend: { display: true } } } });
-
-            // Chart 5: Stacked Bar - Vertical
-            analyticsCharts.c5 = new Chart(document.getElementById('chart5'), { type: 'bar', data: {}, options: { ...commonOpts, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { display: true } } } });
-
-            // Chart 6: Vertical Bar
-            analyticsCharts.c6 = new Chart(document.getElementById('chart6'), { type: 'bar', data: {}, options: commonOpts });
-
-            // Chart 7-14: Vertical Bar (Removed indexAxis: 'y')
-            ['chart7','chart8','chart9','chart10','chart11','chart12','chart13','chart14'].forEach((id) => {
-                analyticsCharts[id] = new Chart(document.getElementById(id), { type: 'bar', data: {}, options: commonOpts });
-            });
-
-            // Chart 15, 16
-            analyticsCharts.c15 = new Chart(document.getElementById('chart15'), { 
-                type: 'bar', data: {}, 
-                options: { ...commonOpts, onClick: (e, el) => handleGradeClick(el), onHover: (e, el) => e.native.target.style.cursor = el.length ? 'pointer' : 'default' } 
-            });
-
-            analyticsCharts.c16 = new Chart(document.getElementById('chart16'), { 
-                type: 'pie', data: {}, 
-                options: { ...commonOpts, onClick: (e, el) => handleGradeClick(el), onHover: (e, el) => e.native.target.style.cursor = el.length ? 'pointer' : 'default' } 
-            });
-
-            updateAnalyticsUI();
-        }
-
-        function setAnalyticsFilter(year, month) {
-            analyticsState.year = year;
-            analyticsState.month = month;
-            updateAnalyticsUI();
-        }
-
-        function handleGradeClick(elements) {
-            if(elements.length > 0) {
-                const grades = ['A', 'B', 'C', 'D'];
-                analyticsState.grade = grades[elements[0].index];
-                updateRecipeList();
-            }
-        }
-
-        function updateAnalyticsUI() {
-            const year = analyticsState.year || 'FY2026';
-            const month = analyticsState.month;
-            
-            // Dynamic Header Updates
-            document.getElementById('analytics-page-title').textContent = `Overall Performance Report - ${year}${month ? ' (' + month + ')' : ''}`;
-            
-            document.getElementById('header-chart2').textContent = `Monthly CTA Compliance Report ${year}`;
-            document.getElementById('header-chart3').textContent = `Monthly CTA Compliance Report ${year} grade wise count`;
-            document.getElementById('header-chart4').textContent = `Monthly CTA Compliance Report ${year} grade wise percentage`;
-            document.getElementById('header-chart5').textContent = `Monthly CTA Compliance Report ${year} grade wise percentage`;
-            
-            const monthYearStr = `[${month || 'All'}, ${year}]`;
-            document.getElementById('header-chart6').textContent = `Overall OFF Count (Component-wise) ${monthYearStr}`;
-            
-            const paramNames = ['Tread', 'Sidewall', 'Belt', 'Capstrip', 'Ply', 'Bead', 'Inner Liner', 'Toe-Toe'];
-            paramNames.forEach((p, i) => {
-                document.getElementById(`header-chart${7+i}`).textContent = `Overall ${p} OFF Count ${monthYearStr}`;
-            });
-
-            document.getElementById('header-chart15').textContent = `Gradewise count for ${monthYearStr}`;
-            document.getElementById('header-chart16').textContent = `Gradewise percentage for ${monthYearStr}`;
-
-            updateGraphsData();
-            updateRecipeList();
-        }
-
-        function updateGraphsData() {
-            // Random Helper
-            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
-            // Graph 2: Bar + Horizontal Line Target
-            analyticsCharts.c2.data = {
-                labels: months,
-                datasets: [
-                    {
-                        type: 'line',
-                        label: 'Target',
-                        data: months.map(() => 50),
-                        borderColor: '#000',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        borderDash: [5, 5]
-                    },
-                    {
-                        type: 'bar',
-                        label: 'Done',
-                        data: months.map(() => rand(40, 60)),
-                        backgroundColor: COLORS.primary
-                    }
-                ]
-            };
-            analyticsCharts.c2.update();
-
-            // Graph 3: Grouped Bar Count (A, B, C, D)
-            analyticsCharts.c3.data = {
-                labels: months,
-                datasets: [
-                    { label: 'A', data: months.map(() => rand(10, 20)), backgroundColor: COLORS.success },
-                    { label: 'B', data: months.map(() => rand(20, 30)), backgroundColor: COLORS.secondary },
-                    { label: 'C', data: months.map(() => rand(5, 10)), backgroundColor: COLORS.yellow },
-                    { label: 'D', data: months.map(() => rand(0, 5)), backgroundColor: COLORS.danger }
-                ]
-            };
-            analyticsCharts.c3.update();
-
-            // Graph 4: Grouped Bar % (A, B, C, D)
-            analyticsCharts.c4.data = {
-                labels: months,
-                datasets: [
-                    { label: 'A', data: months.map(() => rand(30, 40)), backgroundColor: COLORS.success },
-                    { label: 'B', data: months.map(() => rand(40, 50)), backgroundColor: COLORS.secondary },
-                    { label: 'C', data: months.map(() => rand(5, 15)), backgroundColor: COLORS.yellow },
-                    { label: 'D', data: months.map(() => rand(1, 5)), backgroundColor: COLORS.danger }
-                ]
-            };
-            analyticsCharts.c4.update();
-
-            // Graph 5: A+B vs C+D Percentage (Title requested same as 4, keeping distinct data logic)
-            // Stacked bar to 100%
-            const abData = months.map(() => rand(85, 95));
-            const cdData = abData.map(v => 100 - v);
-            
-            analyticsCharts.c5.data = {
-                labels: months,
-                datasets: [
-                    { label: 'A+B', data: abData, backgroundColor: COLORS.success },
-                    { label: 'C+D', data: cdData, backgroundColor: COLORS.danger }
-                ]
-            };
-            analyticsCharts.c5.update();
-
-            // Graph 6: Overall Component Wise Off (Vertical)
-            const components = ['Tread','Sidewall','Belt','Capstrip','Ply','Bead','InnerLiner'];
-            analyticsCharts.c6.data = {
-                labels: components,
-                datasets: [{ data: components.map(() => rand(10, 100)), backgroundColor: COLORS.sky }]
-            };
-            analyticsCharts.c6.update();
-
-            // Graphs 7-14: Vertical bars for components
-            const offChartIds = ['chart7','chart8','chart9','chart10','chart11','chart12','chart13','chart14'];
-            offChartIds.forEach(id => {
-                analyticsCharts[id].data = {
-                    labels: ['Param 1', 'Param 2', 'Param 3'],
-                    datasets: [{ data: [rand(10, 50), rand(5, 30), rand(1, 20)], backgroundColor: COLORS.lightOrange }]
-                };
-                analyticsCharts[id].options.indexAxis = 'x'; // Ensure vertical
-                analyticsCharts[id].update();
-            });
-
-            // Graph 15 & 16: Gradewise
-            const gradeCounts = [rand(10,20), rand(30,50), rand(10,15), rand(2,8)];
-            analyticsCharts.c15.data = { labels: ['A','B','C','D'], datasets: [{ data: gradeCounts, backgroundColor: [COLORS.success, COLORS.secondary, COLORS.yellow, COLORS.danger] }] };
-            analyticsCharts.c15.update();
-            
-            const gradePerc = [rand(20,30), rand(40,50), rand(10,20), rand(5,10)];
-            analyticsCharts.c16.data = { labels: ['A','B','C','D'], datasets: [{ data: gradePerc, backgroundColor: [COLORS.success, COLORS.secondary, COLORS.yellow, COLORS.danger] }] };
-            analyticsCharts.c16.update();
-        }
-
-        function updateRecipeList() {
-            document.getElementById('recipeListHeader').textContent = `Grade ${analyticsState.grade}`;
-            const listBody = document.getElementById('analyticsRecipeListBody');
-            
-            // Mock Recipe Data
-            const recipes = [
-                { name: '120/80R12 ULT XPC', rating: '92%' },
-                { name: '145/80R13 ULT HL', rating: '88%' },
-                { name: '155/70R13 TAXIMAX', rating: '75%' },
-                { name: '165/80R14 UX ROYAL', rating: '60%' },
-                { name: '195/80R15 BRUTE', rating: '95%' }
-            ];
-            
-            // Filter logic (mock)
-            const filtered = recipes.filter((_, i) => (analyticsState.grade === 'A' ? i % 2 === 0 : analyticsState.grade === 'D' ? i > 2 : true));
-            
-            listBody.innerHTML = filtered.length ? filtered.map(r => `
-                <tr class="hover:bg-blue-50 transition-colors">
-                    <td class="p-3 border-b font-medium text-gray-700">${r.name}</td>
-                    <td class="p-3 border-b text-center font-bold text-blue-600">${analyticsState.grade}</td>
-                    <td class="p-3 border-b text-center">${r.rating}</td>
-                </tr>
-            `).join('') : `<tr><td colspan="3" class="p-4 text-center text-gray-400 italic">No recipes found.</td></tr>`;
-        }
     </script>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
         const IconBase = ({ children, className, ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
         );
@@ -1581,6 +1175,11 @@
         const TableIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><line x1="3" x2="21" y1="9" y2="9" /><line x1="3" x2="21" y1="15" y2="15" /><line x1="12" x2="12" y1="3" y2="21" /></IconBase>;
         const CalendarIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></IconBase>;
         const Printer = (props) => <IconBase {...props}><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></IconBase>;
+        const Icon = ({ path, className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {path}
+            </svg>
+        );
 
 const cutAnalysisData = [
     { id: 1, parameter: "Overall Tread Center Gauge", specTarget: "13.8", tolA: "±0.5", tolB: "±0.8", tolC: "±1.0", s1: "14.59", s2: "14.64", s3: "14.6", avg: "14.61", score: "8.00", rating: "B", status: "OK" },
@@ -1605,6 +1204,513 @@ const cutAnalysisData = [
     { id: 20, parameter: "Pad Gauge SS", specTarget: "2.8", tolA: "±0.2", tolB: "±0.4", tolC: "±0.6", s1: "3.2", s2: "3.13", s3: "2.99", avg: "3.11", score: "9.00", rating: "A", status: "OK" },
     { id: 21, parameter: "Pad Gauge OSS", specTarget: "2.4", tolA: "±0.2", tolB: "±0.4", tolC: "±0.6", s1: "2.57", s2: "2.36", s3: "2.82", avg: "2.58", score: "10.00", rating: "A", status: "OK" },
 ];
+
+        const RECIPES_DB = [
+            { id: 'r1', name: '120/80R12 ULT XPC1', currentGrades: { A: 15, B: 2, C: 1, D: 0 }, historyGrades: { A: 1200, B: 80, C: 15, D: 5 } },
+            { id: 'r2', name: '145/80R13 ULT HL', currentGrades: { A: 20, B: 5, C: 2, D: 1 }, historyGrades: { A: 800, B: 150, C: 40, D: 10 } },
+            { id: 'r3', name: '155/70R13 TAXIMAX', currentGrades: { A: 35, B: 1, C: 0, D: 0 }, historyGrades: { A: 2500, B: 50, C: 10, D: 2 } },
+            { id: 'r4', name: '165/80R14 UX ROYAL', currentGrades: { A: 10, B: 8, C: 4, D: 1 }, historyGrades: { A: 600, B: 200, C: 80, D: 20 } },
+            { id: 'r5', name: '195/80R15 BRUTE', currentGrades: { A: 5, B: 0, C: 0, D: 0 }, historyGrades: { A: 400, B: 10, C: 2, D: 0 } }
+        ];
+
+        const PARAMETERS_DB = [
+            { id: 1, name: "Overall Tread Center Gauge", date: "Feb-25", target: 13.8, avg: 14.2, std: 0.15, type: "Critical" },
+            { id: 2, name: "Overall Shoulder Gauge SS", date: "Jan-25", target: 16.2, avg: 16.8, std: 0.22, type: "Critical" },
+            { id: 3, name: "Tread Center Rubber Gauge", date: "Feb-25", target: 9.0, avg: 9.1, std: 0.05, type: "Non-Critical" },
+            { id: 4, name: "Under Tread 2 at Shoulder", date: "Dec-24", target: 2.4, avg: 2.9, std: 0.3, type: "Critical" },
+            { id: 5, name: "Belt 1 Width", date: "Jan-25", target: 92, avg: 91.5, std: 0.8, type: "Non-Critical" },
+            { id: 6, name: "Pad Gauge SS", date: "Feb-25", target: 2.8, avg: 2.9, std: 0.1, type: "Non-Critical" }
+        ];
+
+        const CurrentMonthSection = () => {
+            const [selectedGrade, setSelectedGrade] = useState('B'); 
+            const [currentMonth, setCurrentMonth] = useState('2026-02'); 
+            const [sortConfig, setSortConfig] = useState({ key: 'inGrade', direction: 'desc' });
+            
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            const aggregates = useMemo(() => {
+                const counts = { A: 0, B: 0, C: 0, D: 0 };
+                RECIPES_DB.forEach(r => {
+                    if (r.currentGrades.A > 0) counts.A++;
+                    if (r.currentGrades.B > 0) counts.B++;
+                    if (r.currentGrades.C > 0) counts.C++;
+                    if (r.currentGrades.D > 0) counts.D++;
+                });
+                return counts;
+            }, [currentMonth]);
+
+            useEffect(() => {
+                if (chartRef.current) {
+                    if (chartInstance.current) chartInstance.current.destroy();
+                    const ctx = chartRef.current.getContext('2d');
+
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['A', 'B', 'C', 'D'],
+                            datasets: [{
+                                label: 'Recipes Count',
+                                data: [aggregates.A, aggregates.B, aggregates.C, aggregates.D],
+                                backgroundColor: ['#22c55e', '#eab308', '#f97316', '#ef4444'],
+                                borderRadius: 4,
+                                barPercentage: 0.6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: (evt, elements) => {
+                                if (elements.length > 0) {
+                                    const grades = ['A', 'B', 'C', 'D'];
+                                    const newGrade = grades[elements[0].index];
+                                    setSelectedGrade(newGrade);
+                                    setSortConfig({ key: 'inGrade', direction: 'desc' });
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, grid: { display: true, color: '#f1f5f9' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+                return () => {
+                    if (chartInstance.current) chartInstance.current.destroy();
+                };
+            }, [aggregates]);
+
+            const handleSort = (key) => {
+                let direction = 'desc';
+                if (sortConfig.key === key && sortConfig.direction === 'desc') {
+                    direction = 'asc';
+                }
+                setSortConfig({ key, direction });
+            };
+
+            const sortedRecipes = useMemo(() => {
+                let data = RECIPES_DB.filter(r => r.currentGrades[selectedGrade] > 0);
+                data.sort((a, b) => {
+                    let valA = 0;
+                    let valB = 0;
+                    if (sortConfig.key === 'total') {
+                        valA = Object.values(a.currentGrades).reduce((sum, v) => sum + v, 0);
+                        valB = Object.values(b.currentGrades).reduce((sum, v) => sum + v, 0);
+                    } else if (sortConfig.key === 'inGrade') {
+                        valA = a.currentGrades[selectedGrade];
+                        valB = b.currentGrades[selectedGrade];
+                    }
+                    if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+                return data;
+            }, [selectedGrade, sortConfig, currentMonth]);
+
+            return (
+                <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-gray-200 flex justify-between items-center">
+                        <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                            Current Month Quality Snapshot
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <label className="text-[10px] font-bold text-gray-500 uppercase">Month:</label>
+                            <input 
+                                type="month" 
+                                value={currentMonth} 
+                                onChange={(e) => setCurrentMonth(e.target.value)}
+                                className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-1 min-h-0">
+                        <div className="w-1/3 p-3 border-r border-gray-100 flex flex-col">
+                            <h3 className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Grade Distribution</h3>
+                            <div className="flex-1 relative">
+                                <canvas ref={chartRef}></canvas>
+                            </div>
+                            <p className="text-[10px] text-center text-gray-400 mt-1">Click bars to filter list</p>
+                        </div>
+
+                        <div className="w-2/3 flex flex-col">
+                            <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                                <h3 className="text-xs font-semibold text-gray-600">Affected Recipes</h3>
+                                {selectedGrade && <span className={`text-[10px] px-2 py-0.5 rounded text-white font-bold ${selectedGrade === 'A' ? 'bg-green-500' : selectedGrade === 'B' ? 'bg-yellow-500' : selectedGrade === 'C' ? 'bg-orange-500' : 'bg-red-500'}`}>Showing Grade {selectedGrade}</span>}
+                            </div>
+                            <div className="flex-1 overflow-auto">
+                                <table className="w-full text-xs text-left">
+                                    <thead className="bg-gray-50 text-gray-500 font-medium sticky top-0 z-10">
+                                        <tr>
+                                            <th className="px-3 py-2">Recipe</th>
+                                            <th className="px-3 py-2 text-center cursor-pointer hover:bg-gray-200 transition-colors select-none" onClick={() => handleSort('total')} title="Sort by Total Checked">
+                                                <div className="flex items-center justify-center gap-1">
+                                                    Total Checked {sortConfig.key === 'total' && (<span className="text-blue-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>)}
+                                                </div>
+                                            </th>
+                                            <th className="px-3 py-2 text-center cursor-pointer hover:bg-gray-200 transition-colors select-none" onClick={() => handleSort('inGrade')} title={`Sort by count In Grade ${selectedGrade}`}>
+                                                <div className="flex items-center justify-center gap-1">
+                                                    In Grade {selectedGrade} {sortConfig.key === 'inGrade' && (<span className="text-blue-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>)}
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {sortedRecipes.map(r => (
+                                            <tr key={r.id} className="hover:bg-blue-50/50">
+                                                <td className="px-3 py-1.5 font-medium text-slate-700">{r.name}</td>
+                                                <td className="px-3 py-1.5 text-center text-slate-500">{Object.values(r.currentGrades).reduce((a, b) => a + b, 0)}</td>
+                                                <td className="px-3 py-1.5 text-center font-bold text-slate-800">{r.currentGrades[selectedGrade]}</td>
+                                            </tr>
+                                        ))}
+                                        {sortedRecipes.length === 0 && (
+                                            <tr><td colSpan="3" className="text-center py-4 text-gray-400 italic">No recipes found for Grade {selectedGrade}</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const HistoricalSection = () => {
+            const [fromDate, setFromDate] = useState('2025-01');
+            const [toDate, setToDate] = useState('2025-12');
+            const [selectedRecipe, setSelectedRecipe] = useState('');
+            const [selectedGrade, setSelectedGrade] = useState(null);
+            const [selectedParameter, setSelectedParameter] = useState(null); 
+            const [selectedTolerance, setSelectedTolerance] = useState('A'); 
+
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+            const runChartRef = useRef(null);
+            const runChartInstance = useRef(null);
+            const summaryChartRef = useRef(null);
+            const summaryChartInstance = useRef(null);
+
+            useEffect(() => {
+                if (selectedParameter) setSelectedTolerance('A');
+            }, [selectedParameter]);
+
+            // Grade Chart
+            useEffect(() => {
+                if (chartRef.current) {
+                    if (chartInstance.current) chartInstance.current.destroy();
+                    const ctx = chartRef.current.getContext('2d');
+                    let data = [1200, 150, 40, 10];
+                    if (selectedRecipe) {
+                         const r = RECIPES_DB.find(x => x.id === selectedRecipe);
+                         if (r) data = [r.historyGrades.A, r.historyGrades.B, r.historyGrades.C, r.historyGrades.D];
+                    }
+
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['A', 'B', 'C', 'D'],
+                            datasets: [{
+                                label: 'Recipes',
+                                data: data,
+                                backgroundColor: ['#dcfce7', '#eab308', '#f97316', '#ef4444'],
+                                borderColor: ['#22c55e', '#ca8a04', '#ea580c', '#dc2626'],
+                                borderWidth: 1,
+                                borderRadius: 4,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: (evt, elements) => {
+                                if (elements.length > 0) {
+                                    const index = elements[0].index;
+                                    const grades = ['A', 'B', 'C', 'D'];
+                                    const grade = grades[index];
+                                    if (grade === 'A') return;
+                                    setSelectedGrade(grade);
+                                    setSelectedParameter(PARAMETERS_DB[0]);
+                                }
+                            },
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { display: true, color: '#f1f5f9' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+                return () => {
+                    if (chartInstance.current) chartInstance.current.destroy();
+                };
+            }, [selectedRecipe]);
+
+            // Run Chart
+            useEffect(() => {
+                if (runChartRef.current && selectedGrade && selectedRecipe && selectedParameter) {
+                    if (runChartInstance.current) runChartInstance.current.destroy();
+                    
+                    const labels = ['S1 Jan', 'S2 Jan', 'S3 Jan', 'S1 Feb', 'S2 Feb', 'S1 Mar', 'S2 Mar', 'S3 Mar'];
+                    const target = selectedParameter.target;
+                    
+                    let tolBase = 0.3;
+                    let tolColor = '#22c55e';
+                    
+                    if (selectedTolerance === 'B') { tolBase = 0.6; tolColor = '#eab308'; }
+                    else if (selectedTolerance === 'C') { tolBase = 0.9; tolColor = '#f97316'; }
+                    else if (selectedTolerance === 'D') { tolBase = 1.2; tolColor = '#dc2626'; }
+
+                    const tolVals = labels.map(() => tolBase + (Math.random() * 0.1 - 0.05));
+                    const dTarget = labels.map(() => target);
+                    const dTolUpper = labels.map((_, i) => target + tolVals[i]);
+                    const dTolLower = labels.map((_, i) => target - tolVals[i]);
+                    const dActual = labels.map((_, i) => target + (Math.random() * (tolBase * 1.8) - (tolBase * 0.9))); 
+
+                    runChartInstance.current = new Chart(runChartRef.current, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Actual Measured',
+                                    data: dActual,
+                                    borderColor: '#1e3a8a',
+                                    backgroundColor: '#1e3a8a',
+                                    pointBackgroundColor: '#1e3a8a',
+                                    pointBorderColor: '#fff',
+                                    borderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    tension: 0.2,
+                                    order: 1
+                                },
+                                {
+                                    label: 'Target',
+                                    data: dTarget,
+                                    borderColor: '#000000',
+                                    borderWidth: 2,
+                                    pointRadius: 0,
+                                    borderDash: [],
+                                    fill: false,
+                                    order: 2
+                                },
+                                {
+                                    label: `Tol ${selectedTolerance} (+)`,
+                                    data: dTolUpper,
+                                    borderColor: tolColor,
+                                    borderWidth: 1.5,
+                                    pointRadius: 0,
+                                    borderDash: [5, 3],
+                                    fill: false,
+                                    order: 3
+                                },
+                                {
+                                    label: `Tol ${selectedTolerance} (-)`,
+                                    data: dTolLower,
+                                    borderColor: tolColor,
+                                    borderWidth: 1.5,
+                                    pointRadius: 0,
+                                    borderDash: [5, 3],
+                                    fill: false,
+                                    order: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: {
+                                title: { display: true, text: `Parameter Trend: ${selectedParameter.name}`, font: { size: 12, weight: 'bold' } },
+                                legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 10 }, padding: 10 } },
+                                tooltip: {
+                                    callbacks: { label: function(context) { return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`; } }
+                                }
+                            },
+                            scales: {
+                                y: { title: { display: true, text: 'Measured Value' }, grid: { color: '#f3f4f6' } },
+                                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                            }
+                        }
+                    });
+                }
+                return () => {
+                    if (runChartInstance.current) runChartInstance.current.destroy();
+                };
+            }, [selectedGrade, selectedRecipe, selectedParameter, selectedTolerance]);
+
+            // Summary Chart
+            useEffect(() => {
+                if (summaryChartRef.current && selectedGrade && selectedRecipe) {
+                    if (summaryChartInstance.current) summaryChartInstance.current.destroy();
+                    const crit = PARAMETERS_DB.filter(p => p.type === 'Critical').length;
+                    const nonCrit = PARAMETERS_DB.filter(p => p.type === 'Non-Critical').length;
+                    summaryChartInstance.current = new Chart(summaryChartRef.current, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Critical', 'Non-Critical'],
+                            datasets: [{
+                                label: 'Count',
+                                data: [crit, nonCrit],
+                                backgroundColor: ['#ef4444', '#3b82f6'],
+                                borderRadius: 4,
+                                barThickness: 25
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { display: true, grid: {display: false} },
+                                y: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+                return () => {
+                    if (summaryChartInstance.current) summaryChartInstance.current.destroy();
+                };
+            }, [selectedGrade, selectedRecipe]);
+
+            return (
+                <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-gray-200 flex justify-between items-center shrink-0">
+                        <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                            Historical Investigation
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] uppercase font-bold text-gray-400">Timeline:</span>
+                            <input type="month" value={fromDate} onChange={e => setFromDate(e.target.value)} className="text-xs border rounded px-1 py-0.5 bg-white text-gray-700 focus:ring-1 focus:ring-purple-500" />
+                            <span className="text-gray-400">-</span>
+                            <input type="month" value={toDate} onChange={e => setToDate(e.target.value)} className="text-xs border rounded px-1 py-0.5 bg-white text-gray-700 focus:ring-1 focus:ring-purple-500" />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-1 min-h-0">
+                        <div className="w-1/4 p-3 border-r border-gray-100 flex flex-col bg-gray-50/30">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Grade Trends</h3>
+                                {selectedGrade && <button onClick={() => {setSelectedGrade(null); setSelectedParameter(null);}} className="text-[10px] text-blue-600 hover:underline">Clear Grade</button>}
+                            </div>
+                            <div className="flex-1 relative">
+                                <canvas ref={chartRef}></canvas>
+                            </div>
+                            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-100 rounded text-[10px] text-yellow-800 leading-tight">
+                                <strong>Note:</strong> Select a Recipe first, then click Grade B, C, or D bars to investigate. Grade A is read-only.
+                            </div>
+                        </div>
+
+                        <div className="w-3/4 flex flex-col">
+                            <div className="p-3 border-b border-gray-100 flex items-center gap-3 bg-white shrink-0">
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Select Recipe:</label>
+                                <select 
+                                    className="flex-1 text-sm border-gray-300 rounded-md border shadow-sm py-1 px-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                                    value={selectedRecipe}
+                                    onChange={(e) => { setSelectedRecipe(e.target.value); setSelectedGrade(null); setSelectedParameter(null); }}
+                                >
+                                    <option value="">-- Choose Recipe for Root Cause Analysis --</option>
+                                    {RECIPES_DB.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                                </select>
+                            </div>
+
+                            {!selectedRecipe ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-gray-300">
+                                    <Icon path={<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />} className="w-12 h-12 mb-2 opacity-20" />
+                                    <p className="text-sm font-medium">Please select a recipe to begin investigation</p>
+                                </div>
+                            ) : !selectedGrade ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-gray-300 bg-gray-50/30">
+                                    <Icon path={<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />} className="w-12 h-12 mb-2 opacity-20" />
+                                    <p className="text-sm font-medium">Click on Grade B, C, or D bar in the left chart</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                                    <div className="flex-1 flex flex-row min-h-0 border-b border-gray-200">
+                                        <div className="w-1/2 flex flex-col border-r border-gray-100">
+                                            <div className="px-3 py-2 bg-gray-50 border-b border-gray-100 font-bold text-xs text-gray-700 flex justify-between shrink-0">
+                                                <span>Parameter Contribution (Grade {selectedGrade})</span>
+                                                <span className="text-[10px] font-normal text-gray-500">Click row to view trend</span>
+                                            </div>
+                                            <div className="flex-1 overflow-auto">
+                                                <table className="w-full text-xs text-left">
+                                                    <thead className="bg-white text-gray-500 sticky top-0 shadow-sm z-10">
+                                                        <tr>
+                                                            <th className="px-3 py-2 border-b">Parameter</th>
+                                                            <th className="px-2 py-2 border-b text-center">MM-YY</th>
+                                                            <th className="px-2 py-2 border-b text-center">Tgt</th>
+                                                            <th className="px-2 py-2 border-b text-center">Avg</th>
+                                                            <th className="px-2 py-2 border-b text-center">Std</th>
+                                                            <th className="px-2 py-2 border-b text-center">Dev</th>
+                                                            <th className="px-2 py-2 border-b text-center">Type</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-50">
+                                                        {PARAMETERS_DB.map(p => (
+                                                            <tr key={p.id} onClick={() => setSelectedParameter(p)} className={`cursor-pointer transition-colors ${selectedParameter?.id === p.id ? 'bg-purple-50' : 'hover:bg-gray-50'}`}>
+                                                                <td className="px-3 py-1.5 font-medium text-slate-700 truncate max-w-[120px]" title={p.name}>{p.name}</td>
+                                                                <td className="px-2 py-1.5 text-center text-slate-500 text-[10px] whitespace-nowrap">{p.date}</td>
+                                                                <td className="px-2 py-1.5 text-center text-gray-500">{p.target}</td>
+                                                                <td className="px-2 py-1.5 text-center font-mono text-slate-600">{p.avg}</td>
+                                                                <td className="px-2 py-1.5 text-center font-mono text-slate-500">{p.std}</td>
+                                                                <td className={`px-2 py-1.5 text-center font-bold ${Math.abs(p.avg - p.target) > 0.5 ? 'text-red-500' : 'text-green-600'}`}>{(p.avg - p.target).toFixed(1)}</td>
+                                                                <td className="px-2 py-1.5 text-center">
+                                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded border ${p.type === 'Critical' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{p.type === 'Critical' ? 'CRIT' : 'NON'}</span>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-1/2 p-2 flex flex-col bg-slate-50/50">
+                                             <div className="flex justify-between items-center mb-1 px-1">
+                                                <span className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1">
+                                                    <Icon path={<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />} className="w-3 h-3" />
+                                                    Trend Analysis
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] text-gray-600 font-medium">Tolerance:</span>
+                                                    <div className="flex bg-white border border-gray-300 rounded overflow-hidden shadow-sm">
+                                                        {['A', 'B', 'C', 'D'].map(t => (
+                                                            <button key={t} onClick={() => setSelectedTolerance(t)} className={`text-[9px] px-2 py-0.5 font-bold transition-colors border-r last:border-r-0 border-gray-100 ${selectedTolerance === t ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-50'}`}>{t}</button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                             </div>
+                                             <div className="flex-1 relative bg-white rounded border border-gray-200 shadow-sm p-1">
+                                                 <canvas ref={runChartRef}></canvas>
+                                             </div>
+                                             <div className="mt-1 flex justify-end">
+                                                  <button className="text-[10px] bg-white border border-gray-300 text-gray-700 px-2 py-0.5 rounded hover:bg-gray-50 shadow-sm">Full Report</button>
+                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-28 p-3 bg-gray-50 border-t border-gray-200 flex flex-col justify-center shrink-0">
+                                         <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-1 flex items-center gap-2">
+                                            <Icon path={<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />} className="w-3 h-3" />
+                                            Impact Summary (Critical vs Non-Critical)
+                                         </h4>
+                                         <div className="flex-1 relative w-full">
+                                             <canvas ref={summaryChartRef}></canvas>
+                                         </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         const CutAnalysis = ({ filterRecipe, filterMonth, filterGrade, highlightParam }) => (
             <div className="flex flex-col h-full">
@@ -1782,191 +1888,347 @@ const cutAnalysisData = [
             </div>
         );
 
-        const GradewiseAnalysis = ({ monthYear }) => {
-            const [selectedGrade, setSelectedGrade] = useState('B');
-            const [selectedRecipe, setSelectedRecipe] = useState(RECIPES_DATA[0].name); 
-            const chartRef = React.useRef(null);
-            const chartInstance = React.useRef(null);
+        const RecipewiseAnalysis = () => {
+            return (
+                <div className="flex-1 flex flex-col gap-2 p-2 min-h-0 bg-slate-100 h-full">
+                    <div className="h-[40%] min-h-0"><CurrentMonthSection /></div>
+                    <div className="h-[60%] min-h-0"><HistoricalSection /></div>
+                </div>
+            );
+        };
 
+        const PA_Section1 = ({ data, selectedGrade, onGradeChange, activeComponent, activeRecipe, onComponentSelect, onRecipeSelect }) => {
+            const compChartRef = useRef(null);
+            const recipeChartRef = useRef(null);
+            const compInstance = useRef(null);
+            const recipeInstance = useRef(null);
+            
+            // Calculate Component Counts
+            const compData = useMemo(() => {
+                const counts = {};
+                PA_COMPONENTS.forEach(c => counts[c] = 0);
+                data.forEach(d => {
+                    if (d.grade === selectedGrade) counts[d.component]++;
+                });
+                return counts;
+            }, [data, selectedGrade]);
+
+            // Calculate Recipe Counts
+            const recipeData = useMemo(() => {
+                const counts = {};
+                data.forEach(d => {
+                    if (d.grade === selectedGrade && d.component === activeComponent) {
+                        counts[d.recipe] = (counts[d.recipe] || 0) + 1;
+                    }
+                });
+                return counts;
+            }, [data, selectedGrade, activeComponent]);
+
+            // Chart 1: Components
             useEffect(() => {
-                if (chartRef.current) {
-                    if (chartInstance.current) chartInstance.current.destroy();
-                    const ctx = chartRef.current.getContext('2d');
-                    const data = monthYear.endsWith('02') ? [5, 25, 8, 2] : [8, 20, 10, 1];
+                if (!compChartRef.current) return;
+                if (compInstance.current) compInstance.current.destroy();
 
-                    chartInstance.current = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['A', 'B', 'C', 'D'],
-                            datasets: [{
-                                label: 'Recipes',
-                                data: data,
-                                backgroundColor: ['#22c55e', '#eab308', '#f97316', '#ef4444'],
-                                borderRadius: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            onClick: (evt, els) => {
-                                if(els.length > 0) {
-                                    const grades = ['A', 'B', 'C', 'D'];
-                                    setSelectedGrade(grades[els[0].index]);
-                                }
-                            },
-                            plugins: { legend: { display: false } }
-                        }
-                    });
-                }
-                return () => { if(chartInstance.current) chartInstance.current.destroy(); };
-            }, [monthYear]);
+                const ctx = compChartRef.current.getContext('2d');
+                compInstance.current = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: PA_COMPONENTS,
+                        datasets: [{
+                            data: PA_COMPONENTS.map(c => compData[c]),
+                            backgroundColor: PA_COMPONENTS.map(c => c === activeComponent ? '#2563eb' : '#cbd5e1'),
+                            borderRadius: 4, barThickness: 'flex', maxBarThickness: 30
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { ticks: { font: { size: 10 } } }, y: { beginAtZero: true, ticks: { display: false } , grid: { display: false } } },
+                        onClick: (e, el) => { if (el.length) onComponentSelect(PA_COMPONENTS[el[0].index]); }
+                    }
+                });
+            }, [compData, activeComponent]);
 
-            const filteredRecipes = RECIPES_DATA.filter((_, i) => (selectedGrade === 'A' ? i % 3 === 0 : selectedGrade === 'B' ? i % 2 === 0 : i % 3 === 1));
+            // Chart 2: Recipes
+            useEffect(() => {
+                if (!recipeChartRef.current) return;
+                if (recipeInstance.current) recipeInstance.current.destroy();
+                
+                const labels = Object.keys(recipeData);
+                const ctx = recipeChartRef.current.getContext('2d');
+                recipeInstance.current = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: labels.map(l => recipeData[l]),
+                            backgroundColor: labels.map(l => l === activeRecipe ? '#d97706' : '#94a3b8'),
+                            borderRadius: 4, barThickness: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: { x: { display: false }, y: { ticks: { font: { size: 9 }, autoSkip: false } , grid: { display: false } } },
+                        onClick: (e, el) => { if (el.length) onRecipeSelect(labels[el[0].index]); }
+                    }
+                });
+            }, [recipeData, activeRecipe]);
 
             return (
-                <div className="flex flex-col h-full p-4 gap-4 overflow-hidden">
-                    <div className="flex h-[220px] shrink-0 gap-4">
-                        <div className="w-1/3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                            <h4 className="font-bold text-gray-700 text-xs mb-2">Grade Dist. ({monthYear})</h4>
-                            <div className="flex-1 relative"><canvas ref={chartRef}></canvas></div>
-                            <p className="text-center text-[10px] text-gray-400 mt-1">Click bar to filter</p>
-                        </div>
-                        <div className="w-2/3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                            <h4 className="font-bold text-gray-700 text-xs mb-2">Recipes (Grade {selectedGrade})</h4>
-                            <div className="flex-1 overflow-y-auto space-y-1">
-                                {filteredRecipes.length > 0 ? filteredRecipes.map(r => (
-                                    <div key={r.id} onClick={() => setSelectedRecipe(r.name)} 
-                                         className={`p-2 rounded cursor-pointer transition-all border ${selectedRecipe === r.name ? 'bg-blue-50 border-blue-500 shadow-sm' : 'hover:bg-gray-50 border-gray-100'}`}>
-                                        <p className="font-bold text-[11px] text-gray-800 leading-tight">{r.name.split(' - ')[0]}</p>
-                                        <p className="text-[10px] text-gray-500 truncate">{r.description}</p>
-                                    </div>
-                                )) : <p className="text-center text-gray-400 italic mt-4 text-xs">No recipes found</p>}
+                <div className="flex h-full gap-4">
+                    <div className="w-1/2 dashboard-section">
+                        <div className="section-header">
+                            <span className="section-title">Component Distribution</span>
+                            {/* Grade Selector moved here */}
+                            <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded">
+                                <span className="text-[10px] font-bold text-gray-500 px-1">Grade:</span>
+                                {['A', 'B', 'C', 'D'].map(g => (
+                                    <button key={g} onClick={() => onGradeChange(g)}
+                                        className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition-all ${selectedGrade === g ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>
+                                        {g}
+                                    </button>
+                                ))}
                             </div>
                         </div>
+                        <div className="chart-wrapper"><canvas ref={compChartRef}></canvas></div>
                     </div>
-                    <div className="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-                        <div className="p-2 bg-gray-50 border-b border-gray-200"><h4 className="font-bold text-gray-700 text-sm text-center">Selected Report</h4></div>
-                        <div className="flex-1 relative overflow-auto bg-gray-50/50 p-1">
-                            <CutAnalysis filterRecipe={selectedRecipe} filterMonth={monthYear} filterGrade={selectedGrade} />
+                    <div className="w-1/2 dashboard-section">
+                        <div className="section-header"><span className="section-title">Recipe Impact: {activeComponent}</span></div>
+                        <div className="chart-wrapper">
+                            {Object.keys(recipeData).length > 0 ? <canvas ref={recipeChartRef}></canvas> : 
+                            <div className="flex items-center justify-center h-full text-xs text-gray-400">No data for selected component</div>}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const ParameterwiseAnalysis = ({ monthYear }) => {
-            const [selectedParam, setSelectedParam] = useState(PARAMETERS[0]);
-            const [selectedGrade, setSelectedGrade] = useState('B'); 
-            const [selectedRecipe, setSelectedRecipe] = useState(null); 
-            
-            const chartRef = React.useRef(null);
-            const chartInstance = React.useRef(null);
+        const PA_Section2 = ({ data, activeComponent, activeRecipe, activeParameter, onParameterSelect, availableMonths }) => {
+            const [localMonth, setLocalMonth] = useState('All');
 
-            const filteredRecipes = RECIPES_DATA.filter((_, i) => {
-                const mockGrade = ['A', 'B', 'A', 'C', 'B', 'A'][i % 6];
-                return mockGrade === selectedGrade;
-            });
+            // Helper to format YYYY-MM to MM-YY
+            const formatMonth = (m) => {
+                if (!m || m === 'All') return 'All';
+                const [y, mon] = m.split('-');
+                return `${mon}-${y.slice(2)}`;
+            };
 
-            useEffect(() => {
-                if (filteredRecipes.length > 0) {
-                    setSelectedRecipe(filteredRecipes[0].name);
-                } else {
-                    setSelectedRecipe(null);
-                }
-            }, [selectedGrade, selectedParam]);
-
-            useEffect(() => {
-                if (chartRef.current) {
-                    if (chartInstance.current) chartInstance.current.destroy();
-                    const ctx = chartRef.current.getContext('2d');
-                    const data = [12, 18, 5, 1]; 
-
-                    chartInstance.current = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['A', 'B', 'C', 'D'],
-                            datasets: [{
-                                label: 'SKUs',
-                                data: data,
-                                backgroundColor: (context) => {
-                                    const index = context.dataIndex;
-                                    const grades = ['A', 'B', 'C', 'D'];
-                                    return grades[index] === selectedGrade ? '#2563eb' : '#93c5fd';
-                                },
-                                borderRadius: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true, 
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false }, title: { display: true, text: 'SKU Count per Grade', font: { size: 10 } } },
-                            scales: { x: { ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } },
-                            onClick: (evt, els) => {
-                                if(els.length > 0) {
-                                    const grades = ['A', 'B', 'C', 'D'];
-                                    setSelectedGrade(grades[els[0].index]);
-                                }
-                            }
+            const tableRows = useMemo(() => {
+                if (!activeComponent || !activeRecipe) return [];
+                const grouped = {};
+                
+                data.forEach(d => {
+                    if (d.component === activeComponent && d.recipe === activeRecipe) {
+                        // Filter by month if selected
+                        if (localMonth !== 'All' && d.month !== localMonth) return;
+                        
+                        // Group by Parameter AND Month to preserve granularity
+                        const k = `${d.parameter}|${d.month}`;
+                        
+                        if (!grouped[k]) {
+                            grouped[k] = { 
+                                param: d.parameter, 
+                                month: d.month, 
+                                target: d.target, 
+                                total: 0, 
+                                count: 0 
+                            };
                         }
-                    });
-                }
-                return () => { if(chartInstance.current) chartInstance.current.destroy(); };
-            }, [selectedParam, monthYear, selectedGrade]);
+                        grouped[k].total += d.actual;
+                        grouped[k].count++;
+                    }
+                });
+
+                return Object.values(grouped).map(g => ({
+                    ...g, 
+                    avg: g.total / g.count, 
+                    dev: Math.abs((g.total/g.count) - g.target)
+                })).sort((a,b) => b.dev - a.dev); // Sort by highest deviation first
+            }, [data, activeComponent, activeRecipe, localMonth]);
 
             return (
-                <div className="flex flex-col h-full">
-                    <div className="px-6 py-3 border-b border-gray-200 bg-white flex items-center gap-4">
-                        <label className="text-sm font-bold text-gray-700">Select Parameter:</label>
-                        <select className="p-2 border border-gray-300 rounded-lg text-sm font-medium w-96" 
-                                value={selectedParam} onChange={(e) => setSelectedParam(e.target.value)}>
-                            {PARAMETERS.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
+                <div className="dashboard-section h-full">
+                    <div className="section-header">
+                        <span className="section-title flex items-center gap-2">
+                            Parameter Deviation Analysis
+                            <span className="bg-blue-100 text-blue-700 px-2 rounded text-[10px] normal-case">{activeRecipe}</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-gray-500">Month Filter:</span>
+                            <select value={localMonth} onChange={e => setLocalMonth(e.target.value)} className="text-xs border rounded px-1 py-0.5 bg-white">
+                                <option value="All">All Months</option>
+                                {availableMonths.map(m => <option key={m} value={m}>{m}</option>)}
+                            </select>
+                        </div>
                     </div>
-                    <div className="flex flex-col flex-1 p-4 gap-4 overflow-hidden bg-gray-50">
-                        <div className="flex h-[220px] shrink-0 gap-4">
-                            <div className="w-1/3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                                <h4 className="font-bold text-gray-700 text-xs mb-2">Grade vs SKU</h4>
-                                <div className="flex-1 relative"><canvas ref={chartRef}></canvas></div>
-                                <p className="text-center text-[10px] text-gray-400 mt-1">Click bar (A, B, C, D) to filter list</p>
-                            </div>
-                            <div className="w-2/3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                                <h4 className="font-bold text-gray-700 text-xs mb-2 border-b pb-1 truncate" title={`Recipes for ${selectedParam} - Grade ${selectedGrade}`}>
-                                    These are the recipes having {selectedParam} Grade {selectedGrade}
-                                </h4>
-                                <div className="flex-1 overflow-y-auto">
-                                    <table className="w-full text-[10px] text-left">
-                                        <thead className="bg-gray-50 text-gray-500 font-semibold sticky top-0">
-                                            <tr>
-                                                <th className="p-2 border-b">Recipe Name</th>
-                                                <th className="p-2 border-b w-32 text-center">Month–Year</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-100">
-                                            {filteredRecipes.length > 0 ? filteredRecipes.map((r) => (
-                                                <tr key={r.id} onClick={() => setSelectedRecipe(r.name)} className={`cursor-pointer hover:bg-gray-50 ${selectedRecipe === r.name ? 'bg-blue-50' : ''}`}>
-                                                    <td className="p-2 font-medium text-gray-700 truncate" title={r.name}>{r.name.split(' - ')[0]}</td>
-                                                    <td className="p-2 text-center text-gray-500">{r.activatedOn || 'Feb-2026'}</td>
-                                                </tr>
-                                            )) : (
-                                                <tr><td colSpan="2" className="p-4 text-center text-gray-400 italic">No recipes found for Grade {selectedGrade}</td></tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                    <div className="flex-1 overflow-auto bg-white">
+                        <table className="w-full text-xs text-left border-collapse">
+                            <thead className="bg-gray-50 text-gray-600 font-semibold sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th className="px-4 py-2 border-b">Parameter Name</th>
+                                    <th className="px-4 py-2 border-b text-center">MM-YY</th>
+                                    <th className="px-4 py-2 border-b text-right">Target</th>
+                                    <th className="px-4 py-2 border-b text-right">Actual Avg</th>
+                                    <th className="px-4 py-2 border-b text-right">Deviation</th>
+                                    <th className="px-4 py-2 border-b text-center">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableRows.map((r, i) => (
+                                    <tr key={`${r.param}-${r.month}`} onClick={() => onParameterSelect(r.param)}
+                                        className={`cursor-pointer border-b hover:bg-gray-50 ${activeParameter === r.param ? 'bg-blue-50' : ''}`}>
+                                        <td className="px-4 py-1.5 font-medium text-gray-700">{r.param}</td>
+                                        <td className="px-4 py-1.5 text-center text-gray-500">{formatMonth(r.month)}</td>
+                                        <td className="px-4 py-1.5 text-right text-gray-500">{r.target.toFixed(2)}</td>
+                                        <td className="px-4 py-1.5 text-right text-gray-600">{r.avg.toFixed(2)}</td>
+                                        <td className={`px-4 py-1.5 text-right font-bold ${r.dev > 0.5 ? 'text-red-600' : 'text-green-600'}`}>{r.dev.toFixed(3)}</td>
+                                        <td className="px-4 py-1.5 text-center text-[10px] text-blue-500">{activeParameter === r.param ? '● VIEWING' : 'Select'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        const PA_Section3 = ({ data, activeRecipe, activeComponent, activeParameter }) => {
+            const chartRef = useRef(null);
+            const inst = useRef(null);
+            const [tol, setTol] = useState('Tol A');
+
+            const chartData = useMemo(() => {
+                if (!activeParameter) return [];
+                return data.filter(d => 
+                    d.recipe === activeRecipe && d.component === activeComponent && d.parameter === activeParameter
+                ).sort((a,b) => new Date(a.date) - new Date(b.date));
+            }, [data, activeRecipe, activeComponent, activeParameter]);
+
+            useEffect(() => {
+                if (!chartRef.current || chartData.length === 0) return;
+                if (inst.current) inst.current.destroy();
+
+                const target = chartData[0].target;
+                const margin = tol === 'Tol A' ? chartData[0].tolA : tol === 'Tol B' ? chartData[0].tolB : chartData[0].tolC;
+                const upper = target + margin;
+                const lower = target - margin;
+
+                inst.current = new Chart(chartRef.current.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: chartData.map(d => d.date.slice(5)),
+                        datasets: [
+                            { label: 'Actual', data: chartData.map(d => d.actual), borderColor: '#2563eb', borderWidth: 1.5, pointRadius: 2, tension: 0.1 },
+                            { label: 'Target', data: Array(chartData.length).fill(target), borderColor: '#16a34a', borderWidth: 1, borderDash: [5,5], pointRadius: 0 },
+                            { label: 'Upper', data: Array(chartData.length).fill(upper), borderColor: '#dc2626', borderWidth: 1, borderDash: [2,2], pointRadius: 0, fill: false },
+                            { label: 'Lower', data: Array(chartData.length).fill(lower), borderColor: '#dc2626', borderWidth: 1, borderDash: [2,2], pointRadius: 0, fill: false }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { labels: { boxWidth: 10, font: { size: 10 } } }, title: { display: false } },
+                        scales: { y: { title: { display: true, text: 'Value (mm)' } }, x: { ticks: { maxTicksLimit: 15 } } }
+                    }
+                });
+            }, [chartData, tol]);
+
+            return (
+                <div className="dashboard-section h-full">
+                    <div className="section-header">
+                        <span className="section-title flex items-center gap-2">
+                            SPC Trend Analysis
+                            <span className="bg-purple-100 text-purple-700 px-2 rounded text-[10px] normal-case">{activeParameter || 'No Parameter'}</span>
+                        </span>
+                        <div className="flex bg-gray-100 rounded p-0.5">
+                            {['Tol A', 'Tol B', 'Tol C'].map(t => (
+                                <button key={t} onClick={() => setTol(t)} 
+                                    className={`px-2 py-0.5 text-[10px] font-bold rounded ${tol === t ? 'bg-white shadow text-blue-600' : 'text-gray-500'}`}>{t}</button>
+                            ))}
                         </div>
-                        <div className="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-                             <div className="p-2 bg-gray-50 border-b border-gray-200"><h4 className="font-bold text-gray-700 text-sm text-center">Master Sheet Analysis</h4></div>
-                             {selectedRecipe ? (
-                                <div className="flex-1 relative overflow-auto bg-gray-50/50 p-1">
-                                    <CutAnalysis filterRecipe={selectedRecipe} filterMonth={monthYear} highlightParam={selectedParam} />
-                                </div>
-                             ) : (
-                                <div className="flex-1 flex items-center justify-center text-gray-400 italic p-4 text-center">
-                                    Select a recipe from the list to view detailed Master Sheet
-                                </div>
-                             )}
-                        </div>
+                    </div>
+                    <div className="chart-wrapper">
+                        {chartData.length > 0 ? <canvas ref={chartRef}></canvas> : 
+                        <div className="flex items-center justify-center h-full text-xs text-gray-400">Select a parameter above to view trend</div>}
+                    </div>
+                </div>
+            );
+        };
+
+        const ParameterwiseAnalysis = ({ fromMonth, toMonth }) => {
+            // New state logic ported from the standalone App component
+            const [grade, setGrade] = useState('A');
+            const [component, setComponent] = useState('Tread');
+            const [recipe, setRecipe] = useState(null);
+            const [param, setParam] = useState(null);
+
+            // Filter Global Data based on props
+            const filteredData = useMemo(() => {
+                return PA_FULL_DATABASE.filter(d => d.month >= fromMonth && d.month <= toMonth);
+            }, [fromMonth, toMonth]);
+
+            // Auto-Select Logic
+            useEffect(() => {
+                const validRecipes = [...new Set(filteredData
+                    .filter(d => d.grade === grade && d.component === component)
+                    .map(d => d.recipe))];
+                
+                let nextRecipe = recipe;
+                if (!validRecipes.includes(recipe)) {
+                    nextRecipe = validRecipes[0] || null;
+                    setRecipe(nextRecipe);
+                }
+
+                if (nextRecipe) {
+                    const validParams = [...new Set(filteredData
+                        .filter(d => d.recipe === nextRecipe && d.component === component)
+                        .map(d => d.parameter))];
+                    
+                    if (!validParams.includes(param)) {
+                        setParam(validParams[0] || null);
+                    }
+                } else {
+                    setParam(null);
+                }
+            }, [filteredData, grade, component, recipe]); 
+
+            const months = useMemo(() => [...new Set(filteredData.map(d => d.month))].sort(), [filteredData]);
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 p-2 gap-3 overflow-hidden rounded-lg">
+                    {/* ROW 1: GRAPHS (35% Height) */}
+                    <div className="h-[35%] flex-shrink-0">
+                        <PA_Section1 
+                            data={filteredData} 
+                            selectedGrade={grade} 
+                            onGradeChange={setGrade}
+                            activeComponent={component}
+                            activeRecipe={recipe}
+                            onComponentSelect={setComponent}
+                            onRecipeSelect={setRecipe}
+                        />
+                    </div>
+
+                    {/* ROW 2: TABLE (30% Height) */}
+                    <div className="h-[30%] flex-shrink-0">
+                        <PA_Section2 
+                            data={filteredData}
+                            activeComponent={component}
+                            activeRecipe={recipe}
+                            activeParameter={param}
+                            onParameterSelect={setParam}
+                            availableMonths={months}
+                        />
+                    </div>
+
+                    {/* ROW 3: SPC TREND (35% Height) */}
+                    <div className="h-[35%] flex-shrink-0 pb-1">
+                        <PA_Section3 
+                            data={filteredData}
+                            activeComponent={component}
+                            activeRecipe={recipe}
+                            activeParameter={param}
+                        />
                     </div>
                 </div>
             );
@@ -2090,7 +2352,7 @@ const cutAnalysisData = [
                         </div>
                         <div className="flex gap-1 bg-gray-700 p-1 rounded-lg">
                             {[
-                                {id: 'gradewise', label: 'Gradewise Analysis'},
+                                {id: 'gradewise', label: 'Recipewise Analysis'},
                                 {id: 'parameterwise', label: 'Parameterwise Analysis'},
                                 {id: 'ssoss', label: 'SS & OSS Analysis'}
                             ].map(tab => (
@@ -2103,8 +2365,8 @@ const cutAnalysisData = [
                     </div>
 
                     <div className="flex-1 overflow-hidden relative">
-                        {activeTab === 'gradewise' && <GradewiseAnalysis monthYear={monthRangeStr} />}
-                        {activeTab === 'parameterwise' && <ParameterwiseAnalysis monthYear={monthRangeStr} />}
+                        {activeTab === 'gradewise' && <RecipewiseAnalysis />}
+                        {activeTab === 'parameterwise' && <ParameterwiseAnalysis fromMonth={fromMonth} toMonth={toMonth} />}
                         {activeTab === 'ssoss' && <SSOSSAnalysis monthYear={monthRangeStr} />}
                     </div>
                 </div>
